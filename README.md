@@ -12,7 +12,13 @@ changing how it is managed — it joins an Active Directory domain (or hosts one
 applies GPOs, runs login scripts and PowerShell, and answers the remote
 management tools an admin already uses.
 
-**Status: Phase 0 (bring-up).** Nothing here is usable yet.
+**Status: Phase 0 complete.** A Debian image boots in QEMU straight into Wine's
+`explorer` as the shell, with a taskbar and a running Win32 app, and the boot
+gate passes. Nothing here is usable as a daily driver yet — see the
+[Phase 0 report](docs/phase0-report.md) for what works, what does not, and the
+decisions waiting on David.
+
+![Phase 0 boot gate screenshot](docs/images/phase0-boot-gate.png)
 
 ## What this repo is
 
@@ -24,6 +30,8 @@ records. No code ships from here.
 - [`docs/decisions/`](docs/decisions/) — ADRs. Every non-obvious choice lands here.
 - [`docs/multiuser-debt.md`](docs/multiuser-debt.md) — every place the current
   code assumes a single user. This list seeds the multi-user wineserver work.
+- [`docs/phase0-report.md`](docs/phase0-report.md) — what Phase 0 found,
+  including what broke on the way.
 
 ## Repo map
 
