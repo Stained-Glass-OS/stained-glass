@@ -35,6 +35,11 @@ records. No code ships from here.
 - [`docs/s2-wineserver-analysis.md`](docs/s2-wineserver-analysis.md) — whether a
   machine-level wineserver is patchable or a rewrite. **It is a patch set.**
 
+**32-bit Windows applications now run on a pure amd64 image**, via
+[`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg) built with
+`--enable-archs=i386,x86_64`. No i386 multiarch, measured from the live
+process. See [ADR 0005](docs/decisions/0005-building-wine-ourselves.md).
+
 ## Repo map
 
 Repos are created lazily, when the subproject actually starts. Empty
@@ -46,7 +51,7 @@ placeholders are noise.
 | [`sg-image`](https://github.com/Stained-Glass-OS/sg-image) | mkosi config → bootable immutable Debian image; QEMU boot gate | active |
 | [`sg-session`](https://github.com/Stained-Glass-OS/sg-session) | Session glue: compositor launch, system prefix init, explorer start | active |
 | `sg-testlab` | Oracle harness: same test binaries on a Windows VM and on SG, diffed | Phase 1 |
-| `wine-sg` | Wine fork (multi-user wineserver, NT security model) | only when a patch forces it |
+| [`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg) | Wine built for new WoW64; future multi-user wineserver patches | active |
 | `wdf-wine` | Port of Microsoft's WDF (KMDF/UMDF) onto Wine's ntoskrnl | Phase 1 (S1) |
 | `sg-pnp` | udev hotplug → INF match → auto-load into winedevice | later |
 | `gpo-agent` | SYSVOL GPOs → system hive, scripts | Phase 3 |
