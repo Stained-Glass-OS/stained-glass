@@ -32,6 +32,8 @@ records. No code ships from here.
   code assumes a single user. This list seeds the multi-user wineserver work.
 - [`docs/phase0-report.md`](docs/phase0-report.md) — what Phase 0 found,
   including what broke on the way.
+- [`docs/s2-wineserver-analysis.md`](docs/s2-wineserver-analysis.md) — whether a
+  machine-level wineserver is patchable or a rewrite. **It is a patch set.**
 
 ## Repo map
 
