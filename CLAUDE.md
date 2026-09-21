@@ -39,8 +39,19 @@ Full versions in `docs/BRIEF.md` §2. The ones easiest to violate by accident:
   exit code.
 - **Don't fork Wine until a patch forces it.**
 
+## Licensing, in one paragraph
+
+New code is **AGPL-3.0-or-later** ([ADR 0004](docs/decisions/0004-licensing.md)).
+The exception that will bite you: **anything bound for upstream Wine must be
+LGPL-2.1+**, because AGPL-3.0 cannot be incorporated into an LGPL-2.1+ project.
+A Wine patch written in an AGPL repo can never be submitted upstream, and you
+will not discover that until you try. Wine-bound work goes in `wine-sg`.
+
 ## Decisions that are David's
 
-Marked **[DAVID]** in the brief. Do not decide these unilaterally: licenses for
-new-code repos, creating repos beyond the current phase, and anything that turns
-`wine-sg` into a hard fork. Ask, and wait.
+Marked **[DAVID]** in the brief. Do not decide these unilaterally: creating
+repos beyond the current phase, and anything that turns `wine-sg` into a hard
+fork. Ask, and wait.
+
+Licenses are **settled**: AGPL-3.0-or-later for new code, upstream's license for
+forks and ports. See ADR 0004.

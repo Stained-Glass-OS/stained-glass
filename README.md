@@ -84,5 +84,16 @@ These are not negotiable; they are what keeps the project shippable.
 
 ## License
 
-Documentation in this repo is CC-BY-SA-4.0. Code repos carry their own
-licenses; see the repo map.
+**New code is AGPL-3.0-or-later.** Documentation in this repo is CC-BY-SA-4.0.
+See [ADR 0004](docs/decisions/0004-licensing.md) for the full picture, including
+the two places AGPL is not available to us:
+
+- **`wine-sg` is LGPL-2.1+**, because it is a fork of Wine, and **anything
+  destined for upstream Wine must be LGPL-2.1+ too.** AGPL-3.0 code cannot be
+  incorporated into an LGPL-2.1+ project, so a Wine patch written in an AGPL
+  repo can never be submitted. Wine-bound code is segregated by repo for this
+  reason, not merely by directory.
+- **`wdf-wine` is MIT**, Microsoft's license for the WDF source it ports.
+
+`sg-shell`'s license is still open, and the P7 bake-off decides it: ReactOS is
+GPL-2.0-only, which is incompatible with AGPL-3.0 in both directions.
