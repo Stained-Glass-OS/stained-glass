@@ -16,7 +16,7 @@ X11-vs-Wayland finding, the Wine build choice, and the multi-user debt list.
 > **Done when:** fresh clone → `make image && make boot-test` passes locally and
 > in CI, and the screenshot shows a taskbar with a running app.
 
-Hit, locally. CI is written and pushed but has not run yet — see *Open items*.
+Hit, both locally and in CI, from a fresh clone.
 
 ```
 [boot-test] ssh is up after 15s
@@ -27,6 +27,22 @@ PASS  explorer.exe is running as the shell desktop
 PASS  desktop window exists: "shell - Wine Desktop"  1280x800+0+0
 PASS  taskbar present: ("explorer.exe")  1280x20+0+780
 PASS  notepad is inside the desktop: "Untitled - Notepad"  760x570+0+0
+PASS  notepad.exe process is alive
+RESULT: PASS
+[boot-test] GATE PASS
+```
+
+CI runs the same gate on a GitHub runner with no `/dev/kvm`, under TCG, and
+passes in about six minutes:
+
+```
+No KVM: the gate will run under TCG (slow)
+[boot-test] ssh is up after 68s
+PASS  wineserver is running
+PASS  explorer.exe is running as the shell desktop
+PASS  desktop window exists: "shell - Wine Desktop"  1280x800+0+0
+PASS  taskbar present: ("explorer.exe")  1280x20+0+780
+PASS  notepad is inside the desktop: "Untitled - Notepad"
 PASS  notepad.exe process is alive
 RESULT: PASS
 [boot-test] GATE PASS
@@ -167,6 +183,8 @@ because every one of them is a thing the next person would otherwise rediscover.
 | `sg-session` package install: `adduser` → `chown: Invalid argument` | Image builders run in an unprivileged user namespace, where chowning to another uid is not permitted | `--no-create-home`, with the directories created by `tmpfiles.d` at boot |
 | `Unable to locate package sg-session`, intermittently | mkosi's `PackageDirectories` only regenerates its apt repo when the repo dir's *mtime* changes; a `.deb` copied over an existing file does not move it | install from an extra tree with `dpkg` instead; reasoning recorded in `mkosi.conf` |
 | Gate passed with no taskbar on screen | The check only asked whether a window named Notepad existed *anywhere* | virtual desktop made the prefix default; gate now checks the taskbar and in-desktop placement |
+| Gate passed locally, failed in CI with the desktop plainly in the window list | Wine titles the window `Wine Desktop` on Debian and `Wine desktop` on Ubuntu; the match was case-sensitive | matched case-insensitively, and `sg-session`'s CI now runs in a trixie container |
+| Fresh clone: QEMU refused to start, `UNIX socket path is too long` | The QMP socket lived under `build/`, and a UNIX socket path cannot exceed 108 bytes | socket moved to a short temp directory |
 
 The last row is the one worth dwelling on: a green gate that was not measuring
 the right thing. **The screenshot is what caught it** — the serial log and the
@@ -198,12 +216,26 @@ Each of these is a deliberate call, not an oversight.
 
 ---
 
+### What CI caught that local testing could not
+
+Three of the rows above came only from running elsewhere, and are worth
+separating out, because they are the argument for having CI at all rather than
+declaring victory on a developer machine:
+
+- The **case-sensitive window title** match. It passed on Debian and failed on
+  Ubuntu against a window list that visibly contained the desktop.
+- The **fresh-clone socket path**. Only a deep checkout directory reveals it.
+- Every **host tool `mkosi` shells out to** — `bootctl`, `mcopy`, and the
+  ability to create a user namespace at all. A developer machine has these
+  incidentally; a clean runner does not, and each one failed in turn.
+
+`sg-session`'s gate now runs in a `debian:trixie` container rather than on the
+Ubuntu runner. That is not tidiness: Ubuntu's Wine and Debian's differ in ways
+that reached the gate, and `sg-image` builds a trixie image, so the container
+tests what we actually ship to.
+
 ## Open items
 
-- **CI has not run yet.** Workflows are written and pushed for both repos. The
-  image job is expected to be slow on a runner without `/dev/kvm`; the gate
-  falls back to TCG with a 6x budget and a 120-minute job timeout, but that
-  combination is untested. First push will tell us.
 - **The `wayland` display path is kept as a supported setting** so the ADR 0003
   comparison can be re-run cheaply, but `sg-session-check` fails loudly rather
   than silently skipping when pointed at it.
