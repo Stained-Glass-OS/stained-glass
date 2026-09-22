@@ -246,16 +246,62 @@ Mapping the six changes onto [`multiuser-debt.md`](multiuser-debt.md):
    current policy on AI-assisted contributions *before* submitting anything, and
    record it in an ADR.
 
-## The gate exists, and it is red
+## Progress: 2 of 5 clauses
 
-`sg-multiuser-check` (in `sg-session`) encodes the five clauses of the S2 gate
-verbatim and reports each separately. `make multiuser-test` in `sg-image` drives
-it against a real booted image. Today:
+`sg-multiuser-check` (in `sg-session`) encodes the five clauses verbatim and
+reports each separately. `make multiuser-test` in `sg-image` drives it against a
+real booted image.
 
 ```
-S2 gate: 0 of 5 clauses passing
-RESULT: FAIL -- expected until S2 lands
+== clause 1: two Unix users can both use the system Wine
+PASS    both users ran a Windows process against the system prefix
+== clause 2: both users read the same HKLM
+PASS    a value written to HKLM by sgtest1 is visible to sgtest2
+== clause 3: a non-admin cannot write HKLM\Software\Policies
+FAIL    every Wine process token is created by token_create_admin()
+== clause 4: each user has an isolated HKCU
+FAIL    the hive is shared, not per-user
+== clause 5: SYSTEM service visible to both via SCM
+FAIL    no machine-level wineserver
+S2 gate: 2 of 5 clauses passing
 ```
+
+Changes 1 and 2 are done, as
+`wine-sg/patches/sg/0001-shared-system-prefix.patch`. Two users now run Windows
+processes against one system prefix, served by **a single wineserver**:
+
+```
+$ pgrep -a wineserver
+2022171 /opt/wine-sg/bin/wineserver     # started by sgtest1
+$ ps -eo user,comm | grep cmd.exe
+sgtest2  cmd.exe                        # sgtest2's process, on sgtest1's server
+```
+
+The remaining three failures are exactly the ones predicted below, and need
+changes 4, 5 and the session work respectively.
+
+### What the analysis underestimated
+
+Worth recording, because all three were invisible from reading alone:
+
+1. **The ownership assumption is four checks, not one** — prefix directory,
+   server directory, socket, *and* lock file. Fixing three of them gives the
+   second user `error creating .../lock: Permission denied` from a directory
+   they can demonstrably write to, because it is the existing file's mode
+   refusing them rather than the directory's.
+2. **Group ownership has to be set explicitly** on everything created in shared
+   mode. Left alone these carry the primary group of whoever started the server
+   first, so the first login silently locks everyone else out.
+3. **The rule is implemented twice.** `dlls/ntdll/unix/server.c` has its own
+   copy of the server-directory logic, because the client must work out where
+   the server lives on its own — it may be the process that starts it. The
+   analysis below reads `server/` only and so missed this entirely. Patching one
+   side alone fails with `chdir to /tmp/.wine-<uid>/server-<dev>-<ino>: No such
+   file or directory`, which names neither the cause nor the file to fix.
+
+Point 3 is the one to carry forward: **assume every server-side assumption in
+this document has a client-side twin**, and check `dlls/ntdll/unix/` before
+estimating any of the remaining changes.
 
 **This is deliberate and should stay red until S2 lands.** It is not wired into
 `make test` or CI, because a known-red gate sitting in CI would mask real
