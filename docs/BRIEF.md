@@ -109,7 +109,7 @@ Run in this order. Each has a kill criterion.
   - A: extend Wine's `explorer /desktop` (Start menu, tray, appbars, shell notifications).
   - B: run ReactOS `explorer.exe` + `browseui` (+ its shell32 pieces as overrides) under Wine. It targets public Win32 + known undocumented shell ordinals and is tested on real Windows, so treat failures as ordinary Wine bugs.
   - Pick by lowest-hanging fruit: log every failure for B with the missing API/ordinal; compare against the feature gap list for A. ADR it. GPL (ReactOS) vs LGPL (Wine) is fine as separate binaries; keep them in separate packages.
-- **P8 `sg-compositor`, `sg-greeter`:** replace cage/autologin. Per-window Wayland surfaces, taskbar gets layer-shell placement and a toplevel list. Credentials never pass through Wine.
+- **P8 `sg-compositor`, `sg-greeter`:** replace cage/autologin. Per-window Wayland surfaces, taskbar gets layer-shell placement and a toplevel list. ~~Credentials never pass through Wine.~~ **Superseded by [ADR 0008](decisions/0008-wine-side-login-and-lock.md):** the login and lock screens run inside Wine, because RMM and RDP tools cannot see a Linux greeter and a fleet OS that cannot be remotely supported is not viable. PAM remains the only authority. Restoring the original rule is the goal for `sg-compositor`.
 - **P9 DC role:** Samba AD DC as an image role; same image, two roles (workstation, DC).
 
 ## 7. Oracle harness (`sg-testlab`, start during Phase 1)
