@@ -345,20 +345,56 @@ and clause 2 began failing in the same run. What works is the arrangement
 Windows uses — system and administrators write, everyone else reads — with
 per-user privacy coming from HKCU being a separate hive.
 
-## What clause 3 still needs
+## Clause 3: the mechanism works, and the state does not survive
 
-`HKLM\Software\Policies` is now created by `sg-prefix-init` as the prefix
-owner, so it carries an administrator-owned descriptor, and `create_key()`
-checks the parent for `KEY_CREATE_SUB_KEY`. A non-admin still gets through,
-because the check guards only the *handle's* immediate parent: `reg add
-HKLM\Software\Policies\X` passes a multi-component path from the HKLM handle,
-and the object manager resolves and creates the intermediates without the check
-being reached per component.
+The access control itself is done and demonstrably correct. Within a single
+live server session:
 
-Enforcing this properly means checking each component during path resolution,
-inside the object manager rather than in `registry.c`. That is the next piece of
-work on clause 3, and it is worth doing carefully: it is on the path of every
-object lookup in the server, not just the registry's.
+```
+admin:     reg add HKLM\Software\LiveTest /v A   -> success
+non-admin: reg add HKLM\Software\LiveTest /v B   -> Unable to access or create
+                                                     the specified registry key
+```
+
+Identity is right too — the server reports `uid=1002 prefix_owner=1001
+is_admin=0`, with the Administrators group dropped from that token.
+
+**The gate still fails because Wine stores no registry security at all.**
+`save_subkeys()` in `server/registry.c` writes a key's name, timestamp, class,
+symlink flag and values. There is no field for a security descriptor in the
+`.reg` format, and none is written:
+
+```c
+fprintf( f, "] %u\n", ... );          /* name and modification time */
+fprintf( f, "#time=%x%08x\n", ... );
+if (key->class) ...                   /* class */
+if (key->flags & KEY_SYMLINK) ...     /* symlink flag */
+for (i = 0; i <= key->last_value; i++) dump_value( &key->values[i], f );
+```
+
+So every descriptor lives only as long as the wineserver. Protection applied by
+`sg-prefix-init` is gone by the time a login session starts a new server, which
+is exactly the gap between "the mechanism works" and "the gate passes".
+
+This is a bigger deal than clause 3. **P3 (`gpo-agent`) depends on it**: applying
+a GPO means writing policy into the registry and having it stay protected across
+reboots. Registry security that evaporates on restart cannot support that.
+
+Three ways out, and the choice is a design decision rather than a patch:
+
+1. **Extend the `.reg` format** to carry descriptors. Most faithful to Windows,
+   where the hive stores them. Changes the on-disk format, so prefixes written
+   by a patched Wine are no longer readable by an unpatched one — worth weighing,
+   since it is a one-way door for any prefix in the field.
+2. **Store descriptors beside the hive**, in a file of our own keyed by key path.
+   Keeps `.reg` compatible; adds a second source of truth that can drift from it.
+3. **Reapply a policy at every server start**, from a declarative list of
+   protected branches. No format change and no drift, but it only protects
+   branches someone thought to list, and says nothing about descriptors an
+   application sets for itself.
+
+Option 3 is the cheapest and is enough for the S2 gate; options 1 and 2 are what
+P3 will actually need. **Worth deciding deliberately before building any of it.**
 
 **This is deliberate and should stay red until S2 lands.** It is not wired into
 `make test` or CI, because a known-red gate sitting in CI would mask real
