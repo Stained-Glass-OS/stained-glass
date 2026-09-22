@@ -88,6 +88,42 @@ to authenticate the server and encrypt before the credential is sent:
 The credential still never touches the registry, the disk, or a log, on either
 path, and is cleared from the bridge's buffers as soon as PAM has it.
 
+## Update: what building pattern B changed
+
+Built in `sg-session` as `sg-rdp-authd` (credential half only; the session
+needs `sg-compositor`). Three things in the design above turned out wrong or
+incomplete:
+
+- **Remote logins do not go through greetd.** greetd manages one physical seat.
+  A remote session authenticates through PAM directly, which keeps PAM the only
+  authority, and the funnel diagram above is correct in spirit (one path to
+  PAM) but not in route.
+- **Privilege separation is required, not optional.** The code that parses RDP
+  off the network is the most exposed in the system and must not run as root;
+  checking an arbitrary user's password needs root. A root monitor forked at
+  startup does only the PAM check, over a socketpair; the RDP side drops to an
+  unprivileged account before listening. The TLS key is loaded before the drop,
+  so its file can be root-only.
+- **NLA is not used for local accounts.** Server-side NLA must verify the
+  client's NTLM exchange, which needs every user's NT hash on disk — the MD4
+  hashes Windows keeps in the SAM, which pass-the-hash attacks target. Storing
+  none of them is strictly better than Windows at rest. The cost is that the
+  RDP connection sequence runs before authentication, where NLA would refuse an
+  unauthenticated client earlier; authentication still completes before any
+  session resource exists. Domain accounts get NLA via **Kerberos** in Phase 2,
+  which needs only the machine keytab and is Windows' strongest mode.
+
+And one trap worth knowing: FreeRDP 3's server `Logon` hook runs during
+negotiation, before the client has sent any credential, and the connection
+continues whatever it returns. The first build trusted it, and a refused logon
+reached the session stage. Authentication happens in `PostConnect` from the
+Client Info packet, with default deny on every connection, and the gate has a
+case that fails if that regresses.
+
+A client that connects **without** a credential is refused today. Real Windows
+RDP shows such a client the Winlogon screen; ours will stream `sg-greeter` once
+the compositor can, which makes pattern A and B the same screen for the user.
+
 ## Consequences
 
 **The security-critical invariant is one sentence:** screen capture and input
