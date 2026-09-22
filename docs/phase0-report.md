@@ -1,7 +1,12 @@
 # Phase 0 report
 
 **Date:** 2026-09-21
-**Status:** complete. `make image && make boot-test` passes.
+**Status:** complete, and since superseded in one respect — the image now ships
+`wine-sg` rather than Debian's Wine, so **32-bit Windows applications run**.
+See [ADR 0005](decisions/0005-building-wine-ourselves.md). The report below is
+otherwise as written at the end of Phase 0; the WoW64 section's conclusion
+("the answer is no") was true of *packaged* Wine and is what led to building
+our own.
 
 The brief asks for a report at the end of Phase 0 covering what worked, the
 X11-vs-Wayland finding, the Wine build choice, and the multi-user debt list.

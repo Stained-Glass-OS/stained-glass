@@ -105,9 +105,18 @@ different artifacts, which ADR 0001 treated as a mostly-theoretical distinction.
 - **32-bit Windows applications now run on a pure amd64 image.** The most
   serious limitation recorded in ADR 0002 is lifted, and i386 multiarch is
   permanently off the table.
-- `sg-image` gains a choice of Wine. Integrating `wine-sg` into the image is
-  follow-up work; the Phase 0 gate still passes on Debian's Wine, and switching
-  is a deliberate step with its own gate, not a silent swap.
+- **`sg-image` now ships `wine-sg`** (done, 2026-09-21). Debian's Wine is out of
+  the image entirely, and the boot gate proves 32-bit end to end: it launches
+  `syswow64\notepad.exe` and requires it to appear *inside* the shell, then
+  screenshots a live window.
+- **It made the image smaller**, which was not expected. `wine-sg` is 454 MB for
+  both architectures; Debian needs 717 MB (amd64) plus 601 MB (i386) for the same
+  coverage, because Debian does not strip its Wine and we do.
+- **DXVK had to come out of the image.** Debian's `dxvk-wine64` ships `.dll.so`
+  ELF builtins laid out for Debian's Wine directory; under new WoW64 the 32-bit
+  half would need exactly the i386 multiarch we removed. Upstream DXVK ships PE
+  DLLs, which are the right shape and belong in the prefix. Follow-up, tracked
+  with VKD3D-Proton on issue #6.
 - **We now own a Wine build**, with what that implies: tracking upstream
   releases, re-checking patches on each bump, and a winetest baseline in
   `sg-testlab` tied to the exact build.

@@ -35,10 +35,12 @@ records. No code ships from here.
 - [`docs/s2-wineserver-analysis.md`](docs/s2-wineserver-analysis.md) — whether a
   machine-level wineserver is patchable or a rewrite. **It is a patch set.**
 
-**32-bit Windows applications now run on a pure amd64 image**, via
-[`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg) built with
-`--enable-archs=i386,x86_64`. No i386 multiarch, measured from the live
-process. See [ADR 0005](docs/decisions/0005-building-wine-ourselves.md).
+**32-bit Windows applications run on a pure amd64 image.** The image ships
+[`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg), built with
+`--enable-archs=i386,x86_64` — no i386 multiarch anywhere. The boot gate proves
+it end to end by launching `syswow64\notepad.exe` into the shell, and the
+screenshot above is that 32-bit Notepad. See
+[ADR 0005](docs/decisions/0005-building-wine-ourselves.md).
 
 ## Repo map
 
