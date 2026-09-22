@@ -114,5 +114,6 @@ the two places AGPL is not available to us:
   reason, not merely by directory.
 - **`wdf-wine` is MIT**, Microsoft's license for the WDF source it ports.
 
-`sg-shell`'s license is still open, and the P7 bake-off decides it: ReactOS is
-GPL-2.0-only, which is incompatible with AGPL-3.0 in both directions.
+`sg-shell`'s license is settled by [ADR 0007](docs/decisions/0007-shell-strategy.md):
+explorer changes are LGPL-2.1+ patches in `wine-sg`, our own panels are separate
+AGPL programs docked over the AppBar protocol.

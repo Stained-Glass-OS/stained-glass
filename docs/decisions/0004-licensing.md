@@ -28,7 +28,7 @@ quietly break a rule the project depends on.
 |---|---|---|
 | `wine-sg` | LGPL-2.1+ | It is a fork of Wine. A fork carries its upstream's license. |
 | `wdf-wine` | MIT | It is a port of Microsoft's MIT-licensed WDF. The brief fixed this, and it was never a [DAVID] choice. |
-| `sg-shell` | undecided | Depends on the P7 bake-off. See below — the ReactOS path forecloses AGPL. |
+| `sg-shell` | **split, see [ADR 0007](0007-shell-strategy.md)** | Explorer patches are LGPL-2.1+ in `wine-sg`; our own panels are separate programs and stay AGPL. |
 
 Documentation in `stained-glass` stays **CC-BY-SA-4.0**. It is prose, not
 software; CC-BY-SA is the copyleft license built for prose, and AGPL's terms
