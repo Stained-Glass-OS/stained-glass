@@ -50,15 +50,26 @@ A program in the user's session is on `WinSta0`. It cannot post to, enumerate,
 or read the lock screen's windows, because they are on a different station
 owned by a different user.
 
-### 2. Everything in the user's session is frozen while locked (better)
+### 2. Everything in the user's session is frozen while locked (defense in depth)
 
 On lock, the user's session processes are moved to a frozen cgroup. A frozen
-process does not run: it cannot poll the keyboard, cannot capture the screen,
-cannot race anything, cannot phone home. On unlock they thaw and continue.
+process does not run: it cannot poll the keyboard, capture the screen, race
+anything, or phone home while frozen. On unlock they thaw and continue. Windows
+does not do this — its applications run throughout.
 
-**Windows cannot do this** — its applications run throughout. This is the
-single biggest improvement available to us, and it costs nothing to implement
-because the kernel already has `cgroup.freeze`.
+**Freeze is not sufficient on its own, and the adversarial gate proved it.** A
+keylogger polling `GetAsyncKeyState` was frozen, a secret was typed, and the
+process was thawed. Its first poll after thawing recovered the *distinct
+characters* of the secret: `GetAsyncKeyState`'s "pressed since the last call"
+bits accumulate in the input state, and freezing the reader does not clear
+them, it only defers the read. Order and key repeats were lost, but the set of
+characters in a password leaking is already a break.
+
+The lesson sets the priority: **the load-bearing defense is #3, that the
+keystrokes never reach the user session's display server at all.** If they
+never arrive, there is no accumulated state for a thawed process to recover.
+Freeze then adds real value on top — it stops screen capture and any live
+exfiltration during the lock — but it is the belt, not the trousers.
 
 Session 0 is deliberately *not* frozen: that is where the RMM and remote-access
 services live, and freezing them would make a locked machine unreachable, which
@@ -76,6 +87,16 @@ This is stronger than Ctrl+Alt+Del in one specific way: SAS guarantees you can
 *reach* the real UI, but on Windows a program can still watch the keyboard
 while you type into it if it has the right hooks. Compositor-owned routing
 means the keystrokes are never delivered anywhere else at all.
+
+This is the defense the freeze finding (see #2) makes load-bearing. The user
+session's display server (its XWayland) must never receive the lock-screen key
+events, because anything it receives can be recovered later — frozen or not —
+via `GetAsyncKeyState`'s accumulated press bits. The compositor routes lock
+input only to the lock surface's client in session 0, so the user session's
+XWayland sees nothing and there is nothing to accumulate. The gate must
+therefore run the lock surface and the adversary on **separate display
+servers**, mirroring the deployment; a gate that shares one display server
+between them tests the failure case and will pass a design that leaks.
 
 The "am I talking to the real lock screen?" guarantee that SAS provides is met
 by the lock surface being the only thing the compositor will display and accept
@@ -98,8 +119,8 @@ and it is worth being precise rather than generous.
 | Property | Windows | Stained Glass |
 |---|---|---|
 | Credential UI isolated from user programs | Secure Desktop | Separate window station, separate Unix user, separate session |
-| User programs during lock | keep running | **frozen** |
-| Keystrokes reachable by other programs | possible with hooks | **never delivered to them** |
+| User programs during lock | keep running | **frozen** (defense in depth; not sufficient alone — see #2) |
+| Keystrokes reachable by other programs | possible with hooks | **never delivered to the user session's display server** |
 | Guaranteed path to the real UI | Ctrl+Alt+Del | compositor is the only thing that can draw or route while locked |
 | Credential isolated from the OS | Credential Guard (VBS) | **no equivalent** — stated plainly |
 | Remote support can reach a locked machine | yes | yes (session 0 is not frozen) |
