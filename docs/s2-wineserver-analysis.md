@@ -346,7 +346,33 @@ and clause 2 began failing in the same run. What works is the arrangement
 Windows uses — system and administrators write, everyone else reads — with
 per-user privacy coming from HKCU being a separate hive.
 
-## Clause 5 is done: a machine-level wineserver
+## Where each clause stands
+
+| clause | on a developer box | in the image |
+|---|---|---|
+| 1. two users on one prefix | PASS | PASS |
+| 2. both read the same HKLM | PASS | PASS |
+| 3. non-admin cannot write Policies | FAIL | **PASS** |
+| 4. isolated HKCU each | PASS | PASS |
+| 5. SYSTEM service via SCM | **PASS** | FAIL |
+
+**4 of 5 in both places, but not the same 4** — and the difference is
+informative rather than annoying.
+
+Clause 3 passes in the image and not on a developer box because the image's
+wineserver is the one that created the protected key and has never restarted.
+Security descriptors live only as long as the server (see below), so the image
+happens to be the case where they survive long enough to matter. That is luck,
+not a fix — the persistence question is still open.
+
+Clause 5 passes on a developer box and not in the image because
+`sg-wineserver.service` is not starting there. The guest journal shows
+`sg-prefix-init.service` beginning and never completing, and no `wineserver`
+entry at all, so the `Requires=` never releases. That is a unit-ordering problem
+rather than a design one: the same code satisfies the clause end to end when the
+server is started by hand. **Next thing to fix.**
+
+## Clause 5 is done in principle: a machine-level wineserver
 
 `sg-wineserver.service` runs a persistent wineserver as root before `greetd`,
 and `sg-services-start` starts `services.exe` inside it. Root maps to the SYSTEM
