@@ -246,7 +246,7 @@ Mapping the six changes onto [`multiuser-debt.md`](multiuser-debt.md):
    current policy on AI-assisted contributions *before* submitting anything, and
    record it in an ADR.
 
-## Progress: 2 of 5 clauses
+## Progress: 3 of 5 clauses
 
 `sg-multiuser-check` (in `sg-session`) encodes the five clauses verbatim and
 reports each separately. `make multiuser-test` in `sg-image` drives it against a
@@ -258,12 +258,20 @@ PASS    both users ran a Windows process against the system prefix
 == clause 2: both users read the same HKLM
 PASS    a value written to HKLM by sgtest1 is visible to sgtest2
 == clause 3: a non-admin cannot write HKLM\Software\Policies
-FAIL    every Wine process token is created by token_create_admin()
+FAIL    sgtest2 wrote to HKLM\Software\Policies
 == clause 4: each user has an isolated HKCU
-FAIL    the hive is shared, not per-user
+PASS    sgtest1's HKCU value is not visible to sgtest2
 == clause 5: SYSTEM service visible to both via SCM
 FAIL    no machine-level wineserver
-S2 gate: 2 of 5 clauses passing
+S2 gate: 3 of 5 clauses passing
+```
+
+Per-user hives are real and persist, one file per user beside `system.reg`:
+
+```
+-rw-r--r-- 1 sgtest1 sgwine 3134009 system.reg
+-rw-r--r-- 1 sgtest1 sgwine   36223 user-1001.reg
+-rw-r--r-- 1 sgtest1 sgwine   16870 user-1002.reg
 ```
 
 Changes 1 and 2 are done, as
@@ -302,6 +310,55 @@ Worth recording, because all three were invisible from reading alone:
 Point 3 is the one to carry forward: **assume every server-side assumption in
 this document has a client-side twin**, and check `dlls/ntdll/unix/` before
 estimating any of the remaining changes.
+
+### And a fourth, from doing changes 3 to 6
+
+**Change 6 is much larger than "audit twenty call sites".** The call sites are
+not the problem:
+
+```c
+/* server/token.c, check_object_access() */
+if (!obj->sd)
+{
+    if (*access & MAXIMUM_ALLOWED) *access = mapping.all;
+    return TRUE;
+}
+```
+
+Objects are created **without** a security descriptor unless a caller supplies
+one, and an object without one grants everything. So the registry is not
+under-checked so much as *un-checkable*: no descriptor written to a key can
+protect it while its neighbours have none and the check short-circuits. Change 6
+therefore includes deciding a **default descriptor policy**, which is a design
+decision rather than an audit.
+
+**Changes 3 and 5 are one change, not two.** A SID per uid without per-user
+hives leaves every user but the first with no `\Registry\User\<SID>` at all,
+and every HKCU operation failing with `OBJECT_NAME_NOT_FOUND`. `MAX_SAVE_BRANCH_INFO`
+was exactly 3 — `system.reg`, `userdef.reg`, `user.reg` — so there was not room
+for even one extra hive.
+
+**The default DACL has a wrong answer that looks right.** Naming the creating
+user protects HKLM keys by making them invisible to everyone else, which breaks
+HKLM as shared machine state. The gate caught it exactly: clause 3 began passing
+and clause 2 began failing in the same run. What works is the arrangement
+Windows uses — system and administrators write, everyone else reads — with
+per-user privacy coming from HKCU being a separate hive.
+
+## What clause 3 still needs
+
+`HKLM\Software\Policies` is now created by `sg-prefix-init` as the prefix
+owner, so it carries an administrator-owned descriptor, and `create_key()`
+checks the parent for `KEY_CREATE_SUB_KEY`. A non-admin still gets through,
+because the check guards only the *handle's* immediate parent: `reg add
+HKLM\Software\Policies\X` passes a multi-component path from the HKLM handle,
+and the object manager resolves and creates the intermediates without the check
+being reached per component.
+
+Enforcing this properly means checking each component during path resolution,
+inside the object manager rather than in `registry.c`. That is the next piece of
+work on clause 3, and it is worth doing carefully: it is on the path of every
+object lookup in the server, not just the registry's.
 
 **This is deliberate and should stay red until S2 lands.** It is not wired into
 `make test` or CI, because a known-red gate sitting in CI would mask real
