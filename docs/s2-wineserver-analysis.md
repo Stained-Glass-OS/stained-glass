@@ -226,6 +226,7 @@ Mapping the six changes onto [`multiuser-debt.md`](multiuser-debt.md):
 | 5. per-user hive load/unload | `D1`, `D9` |
 | 6. access-check audit | `D1`, `D4` |
 | session assignment | `D5`, `D6`, `D7` |
+| machine-level wineserver (**done**) | `D5`, `D6` |
 
 ## Recommendation
 
@@ -246,7 +247,7 @@ Mapping the six changes onto [`multiuser-debt.md`](multiuser-debt.md):
    current policy on AI-assisted contributions *before* submitting anything, and
    record it in an ADR.
 
-## Progress: 3 of 5 clauses
+## Progress: 4 of 5 clauses
 
 `sg-multiuser-check` (in `sg-session`) encodes the five clauses verbatim and
 reports each separately. `make multiuser-test` in `sg-image` drives it against a
@@ -262,8 +263,8 @@ FAIL    sgtest2 wrote to HKLM\Software\Policies
 == clause 4: each user has an isolated HKCU
 PASS    sgtest1's HKCU value is not visible to sgtest2
 == clause 5: SYSTEM service visible to both via SCM
-FAIL    no machine-level wineserver
-S2 gate: 3 of 5 clauses passing
+PASS    both users see 'PlugPlay' via the SCM: STATE : 4  RUNNING
+S2 gate: 4 of 5 clauses passing
 ```
 
 Per-user hives are real and persist, one file per user beside `system.reg`:
@@ -344,6 +345,39 @@ HKLM as shared machine state. The gate caught it exactly: clause 3 began passing
 and clause 2 began failing in the same run. What works is the arrangement
 Windows uses — system and administrators write, everyone else reads — with
 per-user privacy coming from HKCU being a separate hive.
+
+## Clause 5 is done: a machine-level wineserver
+
+`sg-wineserver.service` runs a persistent wineserver as root before `greetd`,
+and `sg-services-start` starts `services.exe` inside it. Root maps to the SYSTEM
+SID (`patches/sg/0004`), so the services it hosts are SYSTEM's.
+
+```
+$ ps -o user,pid,comm -C wineserver
+root     2335882 wineserver          # one server, before any login
+
+$ sudo ... wine sc query PlugPlay    # as SYSTEM
+SERVICE_NAME: PlugPlay
+        STATE              : 4  RUNNING
+
+# and from both logged-in users, through the same SCM:
+sgtest1: SERVICE_NAME: PlugPlay   STATE : 4  RUNNING
+sgtest2: SERVICE_NAME: PlugPlay   STATE : 4  RUNNING
+```
+
+That retires **D5**, which this document called the deepest item on the debt list
+and the one most likely to decide patch-set vs. hard fork. It did not require
+rewriting Wine's process model — the session-scoped lifetime turned out to be a
+property of *who starts the server*, not of the server itself. The patch-set
+verdict holds.
+
+**One caveat worth carrying, not burying.** It runs as root, which is the
+Windows model — SYSTEM is privileged — but it is a root process serving a socket
+every desktop user can reach, so a wineserver flaw becomes a root flaw. The
+`SO_PEERCRED` check from patch 0001 guards that socket, which is precisely why
+those two patches were inseparable. A dedicated unprivileged account mapped to
+the SYSTEM SID would keep the NT semantics without the real privilege, and is
+worth doing before this ships anywhere that matters.
 
 ## Clause 3: the mechanism works, and the state does not survive
 
