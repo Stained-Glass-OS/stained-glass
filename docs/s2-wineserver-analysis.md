@@ -246,9 +246,54 @@ Mapping the six changes onto [`multiuser-debt.md`](multiuser-debt.md):
    current policy on AI-assisted contributions *before* submitting anything, and
    record it in an ADR.
 
+## The gate exists, and it is red
+
+`sg-multiuser-check` (in `sg-session`) encodes the five clauses of the S2 gate
+verbatim and reports each separately. `make multiuser-test` in `sg-image` drives
+it against a real booted image. Today:
+
+```
+S2 gate: 0 of 5 clauses passing
+RESULT: FAIL -- expected until S2 lands
+```
+
+**This is deliberate and should stay red until S2 lands.** It is not wired into
+`make test` or CI, because a known-red gate sitting in CI would mask real
+regressions. Run it on purpose.
+
+Each clause names what blocks it rather than failing bare, and clauses that
+cannot be attempted say so instead of reporting a misleading failure:
+
+```
+== clause 3: a non-admin cannot write HKLM\Software\Policies
+BLOCKED cannot test: clause 1 must pass first
+        note: even once it can run, Wine creates every process token with
+        token_create_admin() (server/process.c:715). There is currently no
+        such thing as a non-admin, so this clause cannot pass by tuning a
+        security descriptor.
+```
+
+### Clause 1's failure is now demonstrated, not asserted
+
+The first attempt fails with an ordinary Unix `Permission denied`, which invites
+the conclusion that a `chmod` would fix it. So the gate goes further: it builds
+a prefix owned by one test user, makes it accessible to everyone, and has the
+other user try again.
+
+```
+diagnostic: is this just file permissions?
+  no. With sgtest1's prefix chmod'ed a+rwX, sgtest2 still cannot use it:
+    wine: '/tmp/sg-mu-test/shared-prefix/prefix' is not owned by you
+```
+
+That is Wine's own `fatal_error`, reached with the permission bits wide open.
+The source analysis said no permission bits can satisfy `st_uid != getuid()`;
+this is that claim, run.
+
 ## Caveat
 
-This is a reading of the source, not a demonstration. It is strong enough to
-answer the patch-vs-fork question, which is what the brief asked for at this
-stage, and it is not a substitute for the scripted gate. Estimates of risk above
-are judgements and should be re-examined as the patches land.
+The six changes above are a reading of the source, not a demonstration. That
+reading is strong enough to answer the patch-vs-fork question, which is what the
+brief asked for at this stage. The failure modes are now demonstrated by the
+gate; the *estimates of risk* remain judgements and should be re-examined as the
+patches land.
