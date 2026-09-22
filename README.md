@@ -62,6 +62,12 @@ placeholders are noise.
 | `sg-compositor` | wlroots compositor with taskbar/toplevel integration | Phase 8 |
 | `sg-greeter` | greetd greeter and lock screen | Phase 8 |
 
+> [!IMPORTANT]
+> **Wine prohibits LLM-generated code**, so no AI-written code goes into Wine's
+> tree — including our own `wine-sg` patches. This blocks the Wine-side half of
+> S2 on human authorship. See
+> [ADR 0006](docs/decisions/0006-wine-llm-contribution-policy.md).
+
 ## Ground rules
 
 These are not negotiable; they are what keeps the project shippable.

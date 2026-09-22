@@ -39,6 +39,25 @@ Full versions in `docs/BRIEF.md` §2. The ones easiest to violate by accident:
   exit code.
 - **Don't fork Wine until a patch forces it.**
 
+## Before you write a Wine patch: don't
+
+**Wine prohibits LLM-generated code.** From their Clean Room Guidelines: *"Don't
+use an LLM tool to generate code. There's no guarantee that the training
+material of that LLM respects our Clean Room Guidelines, or that its output is
+compatible with the LGPL."*
+
+The operating rule, until David says otherwise:
+
+> **No AI-written code goes into Wine's tree, including `wine-sg/patches/sg/`.**
+
+This is not about patch quality. The objection is to provenance, so careful
+small well-tested patches do not become acceptable. Reading Wine to understand
+it, and writing gates that exercise it from outside, are fine and are not
+covered.
+
+Full reasoning, including what it does to S2:
+[ADR 0006](docs/decisions/0006-wine-llm-contribution-policy.md).
+
 ## Licensing, in one paragraph
 
 New code is **AGPL-3.0-or-later** ([ADR 0004](docs/decisions/0004-licensing.md)).
