@@ -34,6 +34,9 @@ records. No code ships from here.
   including what broke on the way.
 - [`docs/s2-wineserver-analysis.md`](docs/s2-wineserver-analysis.md) — whether a
   machine-level wineserver is patchable or a rewrite. **It is a patch set.**
+- [`docs/p7-shell-options.md`](docs/p7-shell-options.md) — what a Windows 10-like
+  shell would actually be built on. Wine's explorer already implements
+  `Shell_TrayWnd`; what looks old is the theme, not the structure.
 
 **32-bit Windows applications run on a pure amd64 image.** The image ships
 [`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg), built with
