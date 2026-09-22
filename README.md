@@ -63,10 +63,11 @@ placeholders are noise.
 | `sg-greeter` | greetd greeter and lock screen | Phase 8 |
 
 > [!IMPORTANT]
-> **Wine prohibits LLM-generated code**, so no AI-written code goes into Wine's
-> tree — including our own `wine-sg` patches. This blocks the Wine-side half of
-> S2 on human authorship. See
-> [ADR 0006](docs/decisions/0006-wine-llm-contribution-policy.md).
+> **Wine prohibits LLM-generated code, so we do not upstream.** Wine changes stay
+> downstream in `wine-sg` permanently, which means we own them and every upstream
+> release is a rebase we do ourselves. See
+> [ADR 0006](docs/decisions/0006-wine-llm-contribution-policy.md) — including the
+> licensing question it leaves open.
 
 ## Ground rules
 

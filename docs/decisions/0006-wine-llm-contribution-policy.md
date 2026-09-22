@@ -2,7 +2,8 @@
 
 - **Status:** accepted
 - **Date:** 2026-09-21
-- **Deciders:** needs David's decision on how to proceed
+- **Deciders:** David Hamner — *"Given Wine's policy we will simply not write
+  upstream patches."*
 - **Relates to:** brief rule 4, [S2 analysis](../s2-wineserver-analysis.md), [ADR 0005](0005-building-wine-ourselves.md)
 
 ## Context
@@ -101,36 +102,72 @@ analysis shows the machine-level wineserver *is* Wine changes.
 
 ## Decision
 
-**A, as the working assumption**, pending David's confirmation — with an
-immediate operating rule:
+**B. We do not submit patches upstream.** Wine changes stay downstream in
+`wine-sg`, permanently.
 
-> **No AI-written code goes into Wine's tree, including into `wine-sg`'s
-> `patches/sg/`.**
+David's call, made after reading the finding: *"Given Wine's policy we will
+simply not write upstream patches."*
 
-This is the conservative reading and it costs nothing to hold while David
-decides. Reversing it later is easy; un-shipping contaminated patches is not.
+This resolves the question the policy actually poses to us. Wine's rule governs
+what Wine accepts; if we are not asking them to accept anything, it does not
+constrain what we write. So **Wine patches may be written here**, and S2's
+Wine-side work is unblocked.
 
-The separation `wine-sg` already has — `patches/fixes/` for carried work,
-`patches/sg/` for ours — turns out to matter more than expected. `patches/sg/`
-is now specifically the directory that needs human authorship.
+### What this amends
+
+**Brief rule 4 is amended by this decision.** It said:
+
+> Shape every Wine patch for upstream submission (small, tested, one concern).
+
+The *submission* half is now void — there will be no submission. **The
+engineering half is kept anyway**, deliberately: small, tested,
+one-concern patches are how a downstream series stays rebasable across upstream
+releases. A sprawling patch that touches six things at once is painful to
+forward-port whether or not anyone upstream ever reads it. So the discipline
+survives its original justification.
+
+`wine-sg`'s existing split still holds and still matters:
+
+- `patches/fixes/` — carried from elsewhere, original authorship intact
+- `patches/sg/` — ours
+
+The distinction is no longer "what we owe upstream" but "what we wrote versus
+what we inherited", which is still worth knowing at a glance when a rebase
+conflicts.
+
+### What this does *not* resolve
+
+Wine raised two objections, and this decision answers only the first.
+
+Objection 2 — that LLM output may not be LGPL-compatible at all — is about
+**distribution**, not submission. We distribute `wine-sg`, which is a derivative
+of an LGPL work. Declining to upstream does not touch that question; it is the
+same question whether the patches go to Wine or only to our own users.
+
+I am not able to resolve it, and reasoning about it in an ADR would be worth
+nothing. **It needs actual legal advice.** Flagged, not settled — see
+*Open question for David* below, which stands unanswered.
 
 ## Consequences
 
-- **S2's Wine-side work is blocked on human authorship.** Changes 1 and 2 from
-  the analysis — machine-wide server directory and `SO_PEERCRED` authentication
-  — are the immediate next step and cannot be written by the AI.
-- **S2's non-Wine work is not blocked**, and there is a lot of it: the gate
-  (done, red, 0/5), the multi-user session plumbing, SID↔uid mapping via
-  winbind outside the server, per-user prefix and hive management, and the
-  `sg-testlab` winetest baseline that any Wine patch must not regress.
-- **S1 (`wdf-wine`) is unaffected.** It ports Microsoft's MIT-licensed WDF into
-  a separate repo; it is not Wine source, and MIT carries none of the LGPL
-  concern. Worth confirming that reading with David, but S1 looks like the
-  spike the AI can still drive end to end — which is an argument for running it
-  first, contrary to the brief's ordering.
+- **S2's Wine-side work proceeds**, downstream. Changes 1 and 2 from the
+  analysis — machine-wide server directory and `SO_PEERCRED` authentication —
+  are the immediate next step.
+- **We own these patches forever.** No upstream review, no upstream maintenance,
+  and every upstream release is a rebase we do ourselves. That is the price of
+  the decision and it should be budgeted rather than discovered.
+- **`sg-testlab`'s winetest baseline becomes more important, not less.**
+  Upstream review was the thing that would have caught mistakes in these patches.
+  With that gone, the baseline is the only safety net, and any `wine-sg` patch
+  must not regress it.
+- **Patches stay small and one-concern anyway.** Not for upstream's benefit —
+  for the rebase.
+- **S1 (`wdf-wine`) was never affected.** It ports Microsoft's MIT-licensed WDF
+  into a separate repo: not Wine source, and MIT carries none of the LGPL
+  concern.
 - **The rest of the project is unaffected.** `sg-image`, `sg-session`,
   `sg-testlab`, `gpo-agent`, `prt-broker`, `sg-compositor`, `sg-greeter` are our
-  own AGPL code and subject to our own policy.
+  own AGPL code under our own policy.
 
 ## Open question for David
 
