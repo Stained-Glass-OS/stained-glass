@@ -44,6 +44,7 @@ spend) that must not be decided unilaterally.
 | E2 RDP out | **Built and gated** (`sg-mstsc` in sg-shell + `sdl-freerdp3`); image verification in progress. |
 | F1/F2 Repository | **Measured and written up** ([package-repository.md](package-repository.md)); publishing blocked on [DAVID] decisions. |
 | C1 Principals | **ADR 0012 drafted, awaiting David** — recommends split-token elevation via a broker, and no standing sudo for the system account. |
+| **Security blocker** | **ADR 0013, awaiting David.** Every user's file access currently runs with SYSTEM's Unix rights (debt D14): an ordinary user's program can write System32 and read SYSTEM-only files. Blocks C1/C2 and any multi-user deployment. Gate: `sg-file-access-check` (red, 3/3). |
 
 Found along the way: the session disabled .NET system-wide (fixed); wine-sg's
 build did not apply patches added after first unpack (fixed); sg-session CI

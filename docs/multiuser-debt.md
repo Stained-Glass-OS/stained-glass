@@ -202,6 +202,55 @@ paths that survive it.
 
 ---
 
+### D14. CRITICAL — every user's file access runs with SYSTEM's Unix rights
+
+Found 2026-09-22. **Wine's server, not the client, opens files**
+(`server/fd.c`, `open_fd` → `open()`), then hands the descriptor to the client.
+With one machine-level wineserver shared by every user and running as the
+SYSTEM account (wine-sg patches 0004/0005), the kernel only ever checks
+SYSTEM's rights. Measured in the image, as the ordinary user `sguser`:
+
+| Operation | Unix, as `sguser` | A Windows program, as `sguser` |
+|---|---|---|
+| create a file in `C:\windows\system32` | denied | **allowed** (file owned by `sgsystem`) |
+| read a SYSTEM-only (0600) file | denied | **allowed** |
+| write the user's own 0700 directory | allowed | **denied** |
+
+The registry is protected -- wineserver enforces security descriptors there
+(S2 clause 3) -- but files are not. **An ordinary user can plant a DLL where a
+SYSTEM service will load it: a privilege escalation, and worse than Windows,
+where a standard user cannot write System32.**
+
+*Incurred in:* the machine-level wineserver (patches 0004/0005, `sg-wineserver`).
+
+*Gate:* `sg-session/bin/sg-file-access-check` -- expected red, 3 of 3 failing;
+kept out of CI like the S2 gate. *Decision:* [ADR 0013](decisions/0013-file-access-in-the-shared-wineserver.md).
+
+### D15. New users' profiles point into the SYSTEM account's profile
+
+Found 2026-09-22. sg-prefix-init makes the Default User template by copying the
+freshly initialised hive of the prefix owner (SYSTEM). Wine writes absolute
+paths into it -- 32 of them name `C:\users\sgsystem` -- so every new user
+inherits `TEMP`, `TMP`, the Shell Folders (Favorites, Cookies, Start Menu…)
+and `USERPROFILE` pointing at SYSTEM's profile. Their own profile gets only
+`AppData` and `Desktop`; no Documents, Downloads or Pictures.
+
+*Incurred in:* `sg-session/bin/sg-prefix-init` (the userdef copy) with wine-sg
+patch 0006 (seeding new hives from it).
+
+*Why it is not simply fixed in the template:* Wine computes `USERPROFILE` from
+the account *name* (`LookupAccountSid`), which fails for ordinary users (D12).
+Rewriting the template to `%USERPROFILE%` without D12 leaves users with no
+profile path at all. And creating a user's profile folders *as the user* needs
+D14 fixed, or the folders are created with SYSTEM's rights.
+
+*What it needs:* D12 (names), then a template with `%USERPROFILE%`-relative
+User Shell Folders and no cached absolute Shell Folders, and a first-logon step
+that creates the profile owned by the user -- Windows' profile service, in
+effect.
+
+---
+
 ## How this list feeds S2
 
 The S2 gate in the brief is:

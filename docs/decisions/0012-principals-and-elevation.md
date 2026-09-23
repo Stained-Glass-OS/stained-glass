@@ -34,6 +34,12 @@ These are established by the code, not proposed:
 - **No human has an administrative identity.** There is no "Run as
   administrator", no consent prompt, and no route from a user's session to
   anything privileged.
+- **But file access is not separated at all.** The shared wineserver opens
+  files with SYSTEM's Unix rights for every user, so an ordinary user's program
+  can already write System32 and read SYSTEM-only files (debt D14,
+  [ADR 0013](0013-file-access-in-the-shared-wineserver.md)). Nothing below
+  means anything until that is fixed: elevating to an identity the user can
+  already act as protects nothing.
 
 So "administrators run as the system user" is already how the code decides
 administrative rights. What is open is *how a human gets there*, and whether
