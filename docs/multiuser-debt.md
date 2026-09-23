@@ -293,6 +293,11 @@ the thread -- e.g. a per-user helper that signals on the server's behalf, or
 waking the thread through its own server connection. To be designed; ptrace
 or CAP_KILL would undo patch 0005's point.
 
+**Status, 2026-09-23: fixed** by wine-sg 0021 + sg-session's sg-procagent
+(ADR 0014). The server delegates the thread signal (and cross-process memory
+and affinity) to a per-user agent running as that user; no capability is
+added. ntdll:file's async I/O completion failures go to 0.
+
 ### D17. CRITICAL — a standard user could obtain SYSTEM's token
 
 Found 2026-09-23, while reading how Wine elevates `requireAdministrator`
@@ -360,6 +365,13 @@ and most fleet tooling uses open/query/suspend (D18), not the debugger API.
 *What it needs:* trace the exact refusal in `debug_process`/`debugger_attach`
 under `sg_system_prefix`; it is not a DACL, since the process opens with full
 debug rights.
+
+**Status, 2026-09-23: root-caused and fixed** by wine-sg 0021 + sg-procagent
+(ADR 0014). The refusal was `set_process_debug_flag` writing the debuggee PEB
+via cross-uid ptrace (and, more broadly, `ReadProcessMemory` and thread
+affinity). Delegated to the per-user agent, ntdll:info -- whose
+`DebugActiveProcess`/`WaitForDebugEvent` and affinity tests are the ones that
+failed -- goes to 0 failures.
 
 ---
 
