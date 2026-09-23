@@ -92,9 +92,13 @@ tested against the wrong Wine (fixed, pending a green run).
   path so something can be installed or opened as administrator. Maps to the SG
   admin SID / `sgsystem` and, at the OS edge, to `sudo`/polkit. *Depends on:*
   C1.
-- **C3. Apply policies.** Group-Policy-style enforcement. Foundations exist:
-  `HKLM\Software\Policies` is already admin-owned (sg-session), and ROADMAP
-  **P3 `gpo-agent`** covers `registry.pol` → hive with a `gpresult`-like report.
+- **C3. Apply policies. First pass done, 2026-09-23.** Machine Group Policy is
+  applied and enforced: `SHRestricted` reads HKLM first (wine-sg 0025, machine
+  policy wins over the user), the HKLM policy branch is administrator-owned
+  (0024), `sg-session` applies `/etc/stained-glass/policy.d/*.reg` at boot as
+  SYSTEM, and `sg-start` honours NoClose/StartMenuLogOff. Gate: `make
+  policy-test`. Open: an ADMX/`registry.pol` importer and a `gpresult`-like
+  report (ROADMAP P3), and domain-delivered policy (needs D3/winbind).
   *Depends on:* C1 for who-may-write.
 
 ### D. Domain
