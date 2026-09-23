@@ -38,6 +38,14 @@ question at all but a security-descriptor question.
 administrators; a distinct `HKCU` hive per user, loaded on login; and enforcement
 by NT security descriptors rather than by Unix file modes.
 
+**Largely delivered, 2026-09-23 (owner reduced to SYSTEM).** One HKLM is shared,
+admin-writable and enforced by security descriptors (wine-sg 0002; S2 clauses 2
+and 3); each user has an isolated HKCU hive loaded on demand (clause 4). The
+prefix is still owned by one Unix user -- but that user is now the SYSTEM
+account, the machine's administrator, which is the intended arrangement, not the
+single-user shortcut this item named. What remains is per-user profile
+*directories* (tracked as D15) rather than prefix ownership.
+
 ### D2. No authentication: greetd autologs a hardcoded user in
 
 `greetd` is configured with both `default_session` and `initial_session`
@@ -104,12 +112,20 @@ a login session cannot express that.
 *What S2 must produce:* a machine-level wineserver started at boot, independent
 of any session, with per-user sessions attaching to it.
 
+**Retired, 2026-09-23.** `sg-wineserver.service` runs a machine-level wineserver
+at boot as the SYSTEM account (wine-sg 0004/0005), before greetd; sessions
+attach to it. The S2 gate's clause 1 (two users, one system prefix) passes.
+
 ### D6. No SCM, so no services
 
 Nothing starts Windows services at boot, because there is no boot-time Wine to
 start them in. The S2 gate explicitly requires "a service started at boot as
 SYSTEM is visible to both users via the SCM"; today there is no SYSTEM and no
 SCM.
+
+**Retired, 2026-09-23.** `sg-services-start` runs `services.exe` under the
+machine wineserver at boot as SYSTEM; the S2 gate's clause 5 (a boot service
+visible to both users via the SCM -- PlugPlay) passes.
 
 *Incurred in:* the absence of any such code.
 
