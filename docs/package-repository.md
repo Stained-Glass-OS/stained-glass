@@ -1,5 +1,12 @@
 # Package repository: size, hosting, and what blocks publishing
 
+**Live since 2026-09-23: https://stained-glass-os.github.io/apt**, published by
+sg-image's `make publish` (signed with key
+`397C 84B2 1F74 F300 CD55 660E 02F2 3791 65C3 F0FB`, kept in `~/.sgkeys` on
+the build machine). The image trusts it. Still to do: package the D3D, PowerShell,
+Python and Mono/Gecko payloads as `.deb`s so they update through it too, and
+give packages versions that rise with each build.
+
 Backlog items F1/F2 ([vision-backlog.md](vision-backlog.md)). David's question:
 *host the `.deb` repository on GitHub Pages if our packages fit, otherwise a
 VPS.* Measured 2026-09-22.
