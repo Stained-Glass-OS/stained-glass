@@ -293,6 +293,42 @@ the thread -- e.g. a per-user helper that signals on the server's behalf, or
 waking the thread through its own server connection. To be designed; ptrace
 or CAP_KILL would undo patch 0005's point.
 
+### D17. CRITICAL — a standard user could obtain SYSTEM's token
+
+Found 2026-09-23, while reading how Wine elevates `requireAdministrator`
+programs for the elevation broker's design. The server mints tokens for anyone
+who asks. Measured as a standard user in a shared prefix, with a probe
+program: a program with a `requireAdministrator` manifest started with
+SYSTEM's token (S-1-5-18); the linked token, `NtCreateToken` and
+`ProcessWineGrantAdminToken` each handed out an administrator's token too.
+
+*Incurred in:* upstream Wine (fine for one user who administers their own
+prefix), made an escalation by the shared prefix (wine-sg 0001-0005).
+
+**Status, 2026-09-23: fixed** by wine-sg 0019 -- standard users get elevation
+type Default and no linked token; minting or assigning another user's token is
+for SYSTEM's processes only. *Gate:* `sg-session/bin/sg-token-check` (all four
+attempts denied as the ordinary user, with and without the manifest; granted
+as SYSTEM, which proves the probe can tell).
+
+*Consequence:* `requireAdministrator` programs now run unelevated -- the
+elevation broker (ADR 0012) is what gives them a legitimate path.
+
+### D18. A standard user cannot open their own processes
+
+Found 2026-09-23 (ntdll:info as a second Unix user: `DebugActiveProcess` on
+the user's own child fails with ERROR_ACCESS_DENIED). A process object's
+default security descriptor grants access to Administrators only -- upstream
+never needed more, since everyone there is an administrator. On Windows the
+process's owner (its token's user) has full access. So task managers, debuggers
+and any program that opens its own children by id fail for standard users.
+
+*Incurred in:* upstream's `process_get_sd`, exposed by wine-sg 0002's
+non-administrator tokens.
+
+*What it needs:* a per-process descriptor from the creating token -- the user
+and SYSTEM full access, as Windows' default -- in wine-sg.
+
 ---
 
 ## How this list feeds S2
