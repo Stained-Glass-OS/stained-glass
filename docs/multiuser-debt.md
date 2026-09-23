@@ -184,6 +184,10 @@ installers, audit logs, RMM agents -- see a blank user.
 *What S2 must produce:* names for per-uid SIDs (`MACHINE\user` from the passwd
 entry), and later winbind names for domain users.
 
+**Status, 2026-09-23: local users named** (wine-sg 0017: the server maps
+RID <-> passwd name; `LookupAccountSid`/`LookupAccountName` use it). Domain
+users wait for winbind.
+
 ### D13. Windows programs can reach the Linux side through Z: and `\\?\unix\`
 
 Every Windows program can read the Linux filesystem through the Z: drive and
@@ -226,6 +230,11 @@ where a standard user cannot write System32.**
 *Gate:* `sg-session/bin/sg-file-access-check` -- expected red, 3 of 3 failing;
 kept out of CI like the S2 gate. *Decision:* [ADR 0013](decisions/0013-file-access-in-the-shared-wineserver.md).
 
+**Status, 2026-09-23: fixed for files** (wine-sg 0014-0016: clients open,
+create, delete, rename, reopen and chmod with their own rights). The gate, now
+four clauses, passes 4/4 in the booted image. Still open: device nodes
+(`server/device.c`) open as the server.
+
 ### D15. New users' profiles point into the SYSTEM account's profile
 
 Found 2026-09-22. sg-prefix-init makes the Default User template by copying the
@@ -248,6 +257,41 @@ D14 fixed, or the folders are created with SYSTEM's rights.
 User Shell Folders and no cached absolute Shell Folders, and a first-logon step
 that creates the profile owned by the user -- Windows' profile service, in
 effect.
+
+**Status, 2026-09-23: addressed, pending the image gate.** The premise above
+was half wrong: Wine expands `%USERPROFILE%` from the user's *login name*
+(`GetUserNameW`), not from `LookupAccountSid`, so D12 was not a prerequisite.
+What was needed: `sg-prefix-init` writes the template with
+`%USERPROFILE%`-relative TEMP/TMP and without the Shell Folders cache or
+Volatile Environment; wine-sg 0018 defines `USERPROFILE` before
+`HKCU\Environment` (Windows' order, which Wine had reversed); and
+`sg-profile-create`, run as root by `pam_exec` at session open, creates
+`C:\users\<name>` owned by the user, 0700 -- the profile service. Found by
+the apps gate once D14 was fixed: csc could no longer write the SYSTEM-owned
+TEMP every user had inherited.
+
+### D16. The shared server cannot signal another user's threads
+
+Found 2026-09-23 running Wine's conformance tests as a second Unix user
+against a shared server: the server delivers system APCs (asynchronous I/O
+completion among them) by sending SIGUSR1 to the target thread, and the kernel
+refuses (`tgkill` → EPERM) when the thread belongs to another Unix user. Two
+ntdll:file I/O completion tests fail as a result (`iosb.Status` 0x101); the
+same family explains kernel32:loader's `ReadProcessMemory` failures
+(cross-process memory access by the server into another user's process).
+
+*Incurred in:* the machine-level wineserver running as SYSTEM for every user
+(wine-sg 0004/0005).
+
+*Why it matters:* anything that needs the server to interrupt a thread --
+async I/O completions, thread suspension, `NtGetContextThread` on another
+thread, debugger attach -- degrades to "happens at the thread's next server
+call", or fails.
+
+*What it needs:* a delivery path that does not need the server's rights over
+the thread -- e.g. a per-user helper that signals on the server's behalf, or
+waking the thread through its own server connection. To be designed; ptrace
+or CAP_KILL would undo patch 0005's point.
 
 ---
 
