@@ -45,8 +45,8 @@ spend) that must not be decided unilaterally.
 | A6 .NET Framework & HTML engine | **Done** (new item). Wine Mono 9.4.0 and Gecko 2.47.4 shipped unpacked and shared; the image compiles and runs a .NET Framework program. |
 | F3 Staged updates | **Done.** PackageKit offline updates via `sg-update-prepare` (daily timer); `make update-test` proves download-now, install-on-reboot. The image now also carries Debian's apt sources, which it lacked. |
 | F1/F2 Repository | **Live** at https://stained-glass-os.github.io/apt, signed, trusted by the image ([package-repository.md](package-repository.md)). Open: payloads as `.deb`s, rising versions per build. |
-| C1 Principals | **ADR 0012 drafted, awaiting David** — recommends split-token elevation via a broker, and no standing sudo for the system account. |
-| **Security blocker** | **ADR 0013: option D chosen** (clients open their own files); implementation next. Every user's file access currently runs with SYSTEM's Unix rights (debt D14): an ordinary user's program can write System32 and read SYSTEM-only files. Blocks C1/C2 and any multi-user deployment. Gate: `sg-file-access-check` (red, 3/3). |
+| C1 Principals | **ADR 0012 accepted** (per-program elevation through a broker; Yes/No for administrators, an administrator's credentials for standard users; `sg-admins`; no sudo for `sgsystem`). Unblocked now that D14 is fixed; next. |
+| Security blocker (D14) | **Fixed.** ADR 0013 option D implemented (wine-sg 0014-0016): a user's programs open, create, delete, rename, reopen and chmod files with the user's own Unix rights. `sg-file-access-check` 4/4 in the image. Follow-ons: user SIDs have names (D12, wine-sg 0017); new users get their own profile and TEMP (D15, wine-sg 0018 + a login-time profile step). Open: device nodes; the shared server cannot signal another user's threads (D16). C1/C2 are unblocked. |
 
 Found along the way: the session disabled .NET system-wide (fixed); wine-sg's
 build did not apply patches added after first unpack (fixed); sg-session CI
