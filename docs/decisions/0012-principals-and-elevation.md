@@ -1,8 +1,8 @@
 # 0012. Principals and elevation: who is an administrator, and how anything gets to root
 
-- **Status:** proposed — awaiting David's decision
+- **Status:** accepted (B + D), 2026-09-22 — two details still open, below
 - **Date:** 2026-09-22
-- **Deciders:** David (pending); analysis and recommendation by Claude
+- **Deciders:** David; analysis and recommendation by Claude
 
 ## Context
 
@@ -137,25 +137,23 @@ Separately from A or B: `sgsystem` may `sudo` to root.
 
 ## Decision
 
-**Pending David.** Recommended: **B + D.**
+**B + D, decided by David on 2026-09-22.**
 
-- Sessions run unprivileged, administrators included; elevation is per program,
-  through a broker that prompts on the secure surface and starts the program as
-  a different Unix account (`sgsystem` for now).
-- `sgsystem` gets no sudo. Root is reached by an administrator re-authenticating
-  as themselves, or by narrow helpers for specific operations.
+- Sessions run unprivileged, administrators included; elevation is per
+  program, through a broker that prompts on the secure surface and starts the
+  program as a different Unix account (`sgsystem` for now).
+- `sgsystem` gets no sudo.
+- Root is reached from a user's own account: `sudo su` as the administrator,
+  with their own password.
 
-Questions for David:
+Still open:
 
-1. Does B's per-program elevation match what you meant by "administrators run
-   as the system user", or did you mean whole sessions (A)?
-2. Consent with the administrator's password every time (Windows' strictest
-   setting), or allow consent-only prompts for administrators?
-3. Is "an administrator runs `sudo`, gives their own password" an acceptable
-   form of "`sudo su` from an elevated shell", in place of standing sudo for the
-   system account?
-4. Who is an administrator, before domains exist: a local group (for example
-   `sg-admins`) that the broker checks?
+1. Consent with the administrator's password every time (Windows' strictest
+   setting), or consent-only prompts for administrators?
+2. Who is an administrator before domains exist: a local group (for example
+   `sg-admins`), and is it the same group that grants sudo?
+
+Nothing here is safe to build until ADR 0013 is decided and implemented.
 
 ## Evidence
 

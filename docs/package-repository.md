@@ -51,18 +51,24 @@ point at a URL, and the URL can move. Using a hostname we control from day one
 (a CNAME to Pages now, a VPS later) keeps that move invisible to machines
 already in the field.
 
-## Decisions needed before anything is published — [DAVID]
+## Decisions
 
-1. **Distributing `wine-sg` binaries at all.** ADR 0006 records an open question
-   that needs legal advice: whether LLM-written changes are compatible with
-   Wine's LGPL *distribution* terms. A public package repository distributes
-   `wine-sg`. This is the blocker, and it is not a hosting question.
-2. **The signing key.** apt verifies a repository's `InRelease` signature
-   against a key the machines trust. Who holds the private key, where CI gets
-   it (a repository secret, never a file in any repo), and how it is rotated
-   are yours to decide. A repository published without a key the fleet pins is
-   a package-substitution risk.
-3. **Hosting spend**, if and when it moves off Pages.
+**Decided by David, 2026-09-22:**
+
+- **Publish.** Distributing modified Wine is fine under its licence; the only
+  constraint is that upstream will not accept the patches (ADR 0006).
+- **GitHub Pages first**, migrating to a VPS later.
+
+**Still open:**
+
+1. **The signing key.** Who holds the private key, how CI receives it (an
+   Actions secret, never a file in any repo), and where the offline backup
+   lives.
+2. **The hostname.** A name we control (a CNAME to Pages now, the VPS later)
+   keeps the move invisible to machines already installed.
+3. **Where the repository lives**: a new `Stained-Glass-OS` repository for the
+   Pages site (creating repositories is David's call) or a Pages site on an
+   existing one.
 
 ## What can be built now without publishing
 
