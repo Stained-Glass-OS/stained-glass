@@ -1,6 +1,6 @@
 # 0012. Principals and elevation: who is an administrator, and how anything gets to root
 
-- **Status:** accepted, 2026-09-22
+- **Status:** accepted, 2026-09-22; core implemented 2026-09-23
 - **Date:** 2026-09-22
 - **Deciders:** David; analysis and recommendation by Claude
 
@@ -181,6 +181,36 @@ Also found: an ordinary user's identity has **no account name**
 (`WindowsIdentity.Name` is empty — the SID has no name mapping), so programs
 that show or log the signed-in user get nothing. Unrelated to elevation, but it
 is the same identity layer; tracked in the multi-user debt list.
+
+## Implementation (2026-09-23)
+
+The security-blocker family (ADR 0013, debt D14/D16/D17/D18/D19) is fixed, so
+this is unblocked, and the core landed:
+
+- **`sg-admins`** is the administrators group and the sudo group (sg-session
+  postinst + a sudoers drop-in). Root is reached as the human: `sudo su`.
+- **`sg-brokerd`** (sg-session) is the broker -- a root PAM monitor, the main
+  process dropped to the SYSTEM account. It checks whether the requester is an
+  administrator, takes consent, and launches the program as the SYSTEM
+  account, logging who authorised it. `sg-elevate` is the user's client;
+  wine-sg 0022 routes ShellExecute `runas` ("Run as administrator") to it.
+- **Standard users cannot self-elevate** (wine-sg 0019): the manifest/linked-
+  token/NtCreateToken paths are closed, so the broker is the only way up.
+- **Gate:** `sg-elevate-check` (image `make elevate-test`), mutant-proven -- an
+  administrator's program runs as the SYSTEM account with consent, is refused
+  without it.
+
+**Still to wire:** the graphical consent prompt on the secure surface. Windows'
+UAC uses a full-screen secure desktop, which the compositor's lock surface
+already provides (ADR 0009), so this reuses that mechanism (a consent mode of
+sg-greeter driven like sg-lock-ui) rather than needing a new compositor mode.
+Until it lands the broker fails closed (no consent UI -> deny); the trust model
+and launch path are proven through the test consent path.
+
+**Also still open** (as ADR 0012 already noted): elevated programs share the
+session's display, so input isolation for the elevated window (Windows' UIPI)
+is not yet complete; and per-administrator elevated accounts wait for SID/group
+mapping (P2).
 
 ## Consequences
 
