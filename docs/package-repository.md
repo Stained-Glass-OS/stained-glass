@@ -59,16 +59,16 @@ already in the field.
   constraint is that upstream will not accept the patches (ADR 0006).
 - **GitHub Pages first**, migrating to a VPS later.
 
-**Still open:**
+**Also decided, 2026-09-22:**
 
-1. **The signing key.** Who holds the private key, how CI receives it (an
-   Actions secret, never a file in any repo), and where the offline backup
-   lives.
-2. **The hostname.** A name we control (a CNAME to Pages now, the VPS later)
-   keeps the move invisible to machines already installed.
-3. **Where the repository lives**: a new `Stained-Glass-OS` repository for the
-   Pages site (creating repositories is David's call) or a Pages site on an
-   existing one.
+- **The signing key is generated on the build machine** and kept in
+  `~/.sgkeys/` there -- never in any repository. The repository is signed where
+  the key is and then pushed, so no CI system holds the key.
+- **The address is GitHub's own**, `https://stained-glass-os.github.io/apt/`,
+  for now. Moving to a VPS later means shipping machines a new source first.
+- **The repository lives in `Stained-Glass-OS/apt`**, published from a single
+  orphan commit replaced on every publish, so `wine-sg`'s ~56 MB per release
+  does not accumulate in git history.
 
 ## What can be built now without publishing
 

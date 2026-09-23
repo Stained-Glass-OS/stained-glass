@@ -1,8 +1,8 @@
 # 0013. File access in the shared wineserver
 
-- **Status:** proposed — awaiting David's decision
+- **Status:** accepted — option D, 2026-09-22
 - **Date:** 2026-09-22
-- **Deciders:** David (pending); analysis by Claude
+- **Deciders:** David; analysis by Claude
 
 ## Context
 
@@ -86,10 +86,10 @@ carries it forever (ADR 0006). **This is the kind of change that decides
 
 ## Decision
 
-**Pending David.** Recommended: **D**, with **A** as the fallback if D proves
-too invasive to carry. Until one lands, the shared machine-level wineserver
-must be treated as lab-only: it is not safe with untrusted users, or with
-untrusted software run by trusted ones.
+**D, decided by David on 2026-09-22**: clients open their own files and pass
+the descriptors to the server. A remains the fallback if D proves too invasive
+to carry. Until D lands, the shared machine-level wineserver is lab-only: not
+safe with untrusted users, or with untrusted software run by trusted ones.
 
 ## Evidence
 

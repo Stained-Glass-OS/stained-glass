@@ -1,6 +1,6 @@
 # 0012. Principals and elevation: who is an administrator, and how anything gets to root
 
-- **Status:** accepted (B + D), 2026-09-22 — two details still open, below
+- **Status:** accepted, 2026-09-22
 - **Date:** 2026-09-22
 - **Deciders:** David; analysis and recommendation by Claude
 
@@ -146,12 +146,15 @@ Separately from A or B: `sgsystem` may `sudo` to root.
 - Root is reached from a user's own account: `sudo su` as the administrator,
   with their own password.
 
-Still open:
+Prompts, as on Windows (David, 2026-09-22):
 
-1. Consent with the administrator's password every time (Windows' strictest
-   setting), or consent-only prompts for administrators?
-2. Who is an administrator before domains exist: a local group (for example
-   `sg-admins`), and is it the same group that grants sudo?
+- **An administrator** who elevates gets a **Yes/No consent** prompt.
+- **A standard user** who needs elevation gets a **credential prompt**: an
+  administrator's user name and password.
+
+**Administrators are the members of a local group, `sg-admins`**, which is also
+the group allowed to use `sudo`: one membership grants both. Domain groups map
+onto it later (P2).
 
 Nothing here is safe to build until ADR 0013 is decided and implemented.
 
