@@ -329,6 +329,34 @@ non-administrator tokens.
 *What it needs:* a per-process descriptor from the creating token -- the user
 and SYSTEM full access, as Windows' default -- in wine-sg.
 
+**Status, 2026-09-23: fixed** by wine-sg 0020 -- each process and thread in a
+shared prefix gets a descriptor naming the owning token's user, Local System
+and Administrators with full access. A standard user can now open, suspend,
+read the context of and set the affinity of their own processes; a
+SYSTEM-owned process stays denied. *Still open:* attaching a debugger to your
+own process (`DebugActiveProcess`) fails for a non-server user -- a debug-object
+gate, tracked as D19.
+
+### D19. A standard user cannot attach a debugger to their own process
+
+Found 2026-09-23 (ntdll:info as a second Unix user: `DebugActiveProcess` on
+the test's own child fails with ERROR_ACCESS_DENIED, though D18 lets the same
+user open, suspend and read that child). Distinct from D18: the block is in
+the debug path, not the process SD -- either the debug object's access, the
+remote break-in thread the server creates, or a privilege the server checks
+for another user. Passes for the server's own user.
+
+*Incurred in:* the shared server (wine-sg 0004/0005); surfaced once D18 let
+standard users open their own processes.
+
+*Why it matters:* JIT crash debuggers, IDEs and Visual Studio-style
+attach-to-process fail for standard users. Lower priority than D14/D17: most
+fleet tooling uses open/query/suspend (D18), not the debugger API.
+
+*What it needs:* to trace where in `debug_process`/`debugger_attach` /
+remote-breakin the access is refused, and grant the owner the same way D18
+did for the process object.
+
 ---
 
 ## How this list feeds S2
