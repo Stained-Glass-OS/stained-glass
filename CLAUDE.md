@@ -58,8 +58,10 @@ Two consequences worth holding onto:
 [ADR 0006](docs/decisions/0006-wine-llm-contribution-policy.md) also records a
 question this decision does **not** answer: Wine's second objection, that LLM
 output may not be LGPL-compatible at all, is about *distribution*, not
-submission. It applies to `wine-sg` whether or not we upstream. That one needs
-legal advice and is still open.
+submission. **David decided it on 2026-09-22: distributing modified Wine is
+fine, and `wine-sg` is published** (GitHub Pages first; see
+`docs/package-repository.md`). The only constraint is that upstream will not
+take the patches.
 
 ## Licensing, in one paragraph
 

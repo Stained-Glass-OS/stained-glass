@@ -146,7 +146,11 @@ same question whether the patches go to Wine or only to our own users.
 
 I am not able to resolve it, and reasoning about it in an ADR would be worth
 nothing. **It needs actual legal advice.** Flagged, not settled — see
-*Open question for David* below, which stands unanswered.
+*Open question for David* below.
+
+**Answered by David, 2026-09-22:** he sees no legal issue in distributing
+modified versions of Wine; the only constraint is that upstream will not accept
+the patches. `wine-sg` is published.
 
 ## Consequences
 
