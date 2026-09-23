@@ -5,6 +5,9 @@ done; it is done when the gate exits 0 headlessly, in CI.
 
 Phases past P1 are sketches. Do not start them without David.
 
+David's full wish-list (2026-09) is captured and ordered in
+[`docs/vision-backlog.md`](docs/vision-backlog.md).
+
 ---
 
 ## Phase 0 — bring-up
