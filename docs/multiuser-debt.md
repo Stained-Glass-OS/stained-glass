@@ -80,6 +80,10 @@ the same thing today.
 
 *What S2 must produce:* this belongs in `HKLM`, writable by administrators only.
 
+**Retired, 2026-09-23.** explorer reads `HKLM\Software\Wine\Drivers\Graphics`
+(wine-sg 0023), which `sg-prefix-init` writes as the SYSTEM account; a user's
+HKCU may still override it. The session no longer writes the machine setting.
+
 ---
 
 ## Processes and sessions
@@ -120,6 +124,11 @@ it. There is no shell-restart path.
 *Why it matters:* on Windows the shell is a per-user process that can be killed
 and restarted without ending the session. Ours cannot.
 
+**Retired, 2026-09-23.** `sg-run-explorer` supervises the shell
+(`sg_supervise_shell`): a clean exit ends the session (sign-out via
+`wineboot --end-session`), an abnormal exit restarts it, and a crash loop gives
+up -- Windows' AutoRestartShell. Unit-tested in `make lint`.
+
 ### D8. Two explorers, and we tolerate it
 
 `wineboot` autostarts a bare `explorer.exe /desktop` alongside the
@@ -142,6 +151,10 @@ overwrite the first's.
 
 *What S2 must produce:* per-session state, keyed by user or by session id.
 
+**Retired, 2026-09-23.** `sg_session_env` publishes the live session under
+`/run/user/<uid>` (the user's own 0700 runtime dir), or a per-uid file where
+there is none, so concurrent sessions do not collide.
+
 ### D10. The gate matches processes machine-wide
 
 `sg-session-check` uses `pgrep -f` with no user filter, so it would match
@@ -153,6 +166,10 @@ is not the one it was asked about.
 *Why it matters:* a test that can pass for the wrong reason is worse than no
 test. This is cheap to fix (`pgrep -u`) and should be fixed as soon as a second
 user exists.
+
+**Retired, 2026-09-23.** `sg-session-check` matches this user's explorer and
+notepad and the machine account's wineserver (`pgrep -u`), never another
+user's.
 
 ---
 
@@ -166,6 +183,10 @@ user exists.
 
 *What S2 must produce:* a split between machine state (shared, admin-writable)
 and per-user state, with per-user logs that one user cannot read from another.
+
+**Retired, 2026-09-23.** Per-user program output goes to private temp files or
+the journal (kept per user), not the shared log directory, which drops
+group-write. Machine logs stay in `/var/log/stained-glass`, SYSTEM-written.
 
 ---
 
