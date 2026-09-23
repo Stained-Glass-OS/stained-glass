@@ -111,10 +111,12 @@ tested against the wrong Wine (fixed, pending a green run).
   applied and enforced: `SHRestricted` reads HKLM first (wine-sg 0025, machine
   policy wins over the user), the HKLM policy branch is administrator-owned
   (0024), `sg-session` applies `/etc/stained-glass/policy.d/*.reg` at boot as
-  SYSTEM, and `sg-start` honours NoClose/StartMenuLogOff. Gate: `make
-  policy-test`. Open: an ADMX/`registry.pol` importer and a `gpresult`-like
-  report (ROADMAP P3), and domain-delivered policy (needs D3/winbind).
-  *Depends on:* C1 for who-may-write.
+  SYSTEM, and `sg-start` honours NoClose/StartMenuLogOff. `sg-gpresult`
+  (sg-shell) reports the machine and user policy in force, like `gpresult /r`,
+  gated by planting known policies (2026-09-23). Gate: `make policy-test`. Open:
+  an ADMX/`registry.pol` importer beyond the current `sg-polimport` (ROADMAP
+  P3), and domain-delivered policy (needs D3/winbind). *Depends on:* C1 for
+  who-may-write.
 
 ### D. Domain
 - **D1. Domain member.** ROADMAP **P2**: winbind join, PAM login, Kerberos TGT
