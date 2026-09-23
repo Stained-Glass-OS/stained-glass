@@ -52,6 +52,13 @@ reach a real fleet.
 
 *What S2 must produce:* a real login, a Unix uid per user, and a SID per uid.
 
+**Retired.** greetd now runs the Windows-style greeter as a dedicated `sggreet`
+account and starts the session only after PAM accepts the credentials (ADR
+0008); the autologin configuration is gone from both files above. The image
+boot gate signs in by typing through QEMU's keyboard, so the real login path is
+what is tested. The per-user SID half was already delivered by wine-sg patch
+0002.
+
 ### D3. No SID-to-uid mapping
 
 Wine assigns the prefix owner a default user SID. Nothing maps NT SIDs to Unix
@@ -159,6 +166,39 @@ user exists.
 
 *What S2 must produce:* a split between machine state (shared, admin-writable)
 and per-user state, with per-user logs that one user cannot read from another.
+
+---
+
+### D12. An ordinary user's Windows identity has no name
+
+Found 2026-09-22 while gathering evidence for ADR 0012. Each Unix user gets its
+own SID (wine-sg patch 0002), but nothing maps that SID back to an account
+name: PowerShell's `[Security.Principal.WindowsIdentity]::GetCurrent().Name` is
+empty for `sguser`, while SYSTEM resolves to `NT AUTHORITY\SYSTEM`.
+
+*Incurred in:* wine-sg patch 0002 (SIDs without `LookupAccountSid` names).
+
+*Why it matters:* programs that show, log or authorise by user name --
+installers, audit logs, RMM agents -- see a blank user.
+
+*What S2 must produce:* names for per-uid SIDs (`MACHINE\user` from the passwd
+entry), and later winbind names for domain users.
+
+### D13. Windows programs can reach the Linux side through Z: and `\\?\unix\`
+
+Every Windows program can read the Linux filesystem through the Z: drive and
+start Linux programs through `\\?\unix\` paths, with the user's Unix rights.
+That grants nothing the user lacks in Linux, so it is not an escalation, but it
+exposes far more than a Windows machine does, and it matters once elevated
+programs exist (ADR 0012).
+
+*Incurred in:* Wine's default prefix layout; relied on by wine-sg patch 0010
+(sg-lockctl), sg-shell's `mstsc` App Paths entry and sg-mstsc, and
+sg-install-apps' shortcut helper.
+
+*What it needs:* a decision, with ADR 0012's broker, on removing Z: for users
+and restricting `\\?\unix\` to named helpers -- and moving those users to
+paths that survive it.
 
 ---
 

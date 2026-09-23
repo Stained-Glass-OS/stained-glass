@@ -34,6 +34,21 @@ spend) that must not be decided unilaterally.
 
 ---
 
+## Status (2026-09-22)
+
+| Item | State |
+|---|---|
+| B1 Theming | **Done, first pass.** White flat title bars and light chrome (Default User colour/metric drop-ins from sg-shell), 30px captions, flat caption buttons (wine-sg 0013); controls use Wine's own Light visual style. Verified in the image. Open: recolour Light's blue accents to our purple (an LGPL derivative, so wine-sg). |
+| A1 PowerShell 7 | **Done.** 7.6.6 in `C:\Program Files\PowerShell\7`, on PATH, Start menu; `sg-apps-check` passes in the image. Open: fails with no console and redirected output (unattended use). |
+| A2 Windows Python | **Done.** 3.14.7 with pip/venv, PEP 514, PATH, Start menu; gated in the image. |
+| E2 RDP out | **Built and gated** (`sg-mstsc` in sg-shell + `sdl-freerdp3`); image verification in progress. |
+| F1/F2 Repository | **Measured and written up** ([package-repository.md](package-repository.md)); publishing blocked on [DAVID] decisions. |
+| C1 Principals | **ADR 0012 drafted, awaiting David** — recommends split-token elevation via a broker, and no standing sudo for the system account. |
+
+Found along the way: the session disabled .NET system-wide (fixed); wine-sg's
+build did not apply patches added after first unpack (fixed); sg-session CI
+tested against the wrong Wine (fixed, pending a green run).
+
 ## Themes and items
 
 ### A. Windows software parity (Wine-side apps & runtimes)
