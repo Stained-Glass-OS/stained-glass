@@ -1,0 +1,76 @@
+# Package repository: size, hosting, and what blocks publishing
+
+Backlog items F1/F2 ([vision-backlog.md](vision-backlog.md)). David's question:
+*host the `.deb` repository on GitHub Pages if our packages fit, otherwise a
+VPS.* Measured 2026-09-22.
+
+## What a release weighs
+
+| Package | Size | Notes |
+|---|---:|---|
+| `wine-sg` | 55.6 MB | Both architectures, stripped (1.5 GB unstripped) |
+| `sg-session` | 0.25 MB | Scripts, greeter, lock service |
+| `sg-shell` | 0.06 MB | Start menu, theme defaults |
+| `sg-compositor` | 0.02 MB | |
+| DXVK + VKD3D-Proton | 22 MB | Staged into the image today; not yet a `.deb` |
+| PowerShell 7.6.6 | 101 MB | Upstream zip; staged, not yet a `.deb` |
+| CPython 3.14.7 | 15 MB | NuGet package; staged, not yet a `.deb` |
+| **Total, one version of everything** | **~195 MB** | |
+
+Only `wine-sg` and the three small packages are `.deb`s today. For `apt
+upgrade` to update Direct3D, PowerShell and Python, they need packaging too —
+thin `.deb`s wrapping the pinned upstream builds.
+
+## Does it fit on GitHub Pages?
+
+GitHub's published limits for Pages: a **1 GB** site, a **100 GB/month** soft
+bandwidth limit, and — for a site built from a git branch — git's **100 MB per
+file** limit. Deploying through GitHub Actions avoids the git file limit.
+
+- **Storage: yes.** One version of everything is ~195 MB, so a repository
+  that keeps only the current version of each package (as `reprepro` does by
+  default) fits with room to spare. Keeping a few old `wine-sg` versions for
+  rollback still fits.
+- **Per-file: only via Actions.** The PowerShell package would be ~100 MB, at
+  git's limit. Deploy the repository as a Pages artifact from a workflow, not
+  from a branch.
+- **Bandwidth: this is what runs out.** A fresh machine pulls up to ~195 MB and
+  each `wine-sg` update ~56 MB. Rough monthly transfer, two `wine-sg` updates a
+  month:
+
+  | Machines | New installs + updates | vs 100 GB |
+  |---:|---:|---|
+  | 50 | ~6 GB | fine |
+  | 300 | ~34 GB + installs | fine |
+  | 1,000 | ~110 GB + installs | over |
+
+**Recommendation:** start on GitHub Pages (via Actions) for testers and early
+fleets. Move to a VPS, or a VPS fronted by a CDN, before a deployment
+approaches a few hundred machines. The client side does not change: machines
+point at a URL, and the URL can move. Using a hostname we control from day one
+(a CNAME to Pages now, a VPS later) keeps that move invisible to machines
+already in the field.
+
+## Decisions needed before anything is published — [DAVID]
+
+1. **Distributing `wine-sg` binaries at all.** ADR 0006 records an open question
+   that needs legal advice: whether LLM-written changes are compatible with
+   Wine's LGPL *distribution* terms. A public package repository distributes
+   `wine-sg`. This is the blocker, and it is not a hosting question.
+2. **The signing key.** apt verifies a repository's `InRelease` signature
+   against a key the machines trust. Who holds the private key, where CI gets
+   it (a repository secret, never a file in any repo), and how it is rotated
+   are yours to decide. A repository published without a key the fleet pins is
+   a package-substitution risk.
+3. **Hosting spend**, if and when it moves off Pages.
+
+## What can be built now without publishing
+
+- `.deb` packaging for the D3D layers, PowerShell and Python payloads.
+- A `make repo` target in `sg-image` that builds a signed repository locally
+  from the staged `.deb`s with a throwaway key, and a gate that boots the image
+  pointed at it and runs `apt update && apt upgrade` successfully. This proves
+  the upgrade path end to end without distributing anything.
+- The image's apt sources: Debian and its mirror, plus ours, with our key
+  pinned to our repository only (`Signed-By`), so it cannot sign packages that
+  replace Debian's.

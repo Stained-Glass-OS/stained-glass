@@ -100,7 +100,10 @@ spend) that must not be decided unilaterally.
   `apt` line is the upgrade transport. *Depends on:* F2 (hosting).
 - **F2. Repo hosting **[DAVID]**.** GitHub Pages *if* our packages fit under its
   limits (soft ~1 GB/repo, 100 GB/mo bandwidth, 100 MB/file); else a VPS.
-  **Action:** measure our .deb sizes to decide. Spend/hosting is [DAVID].
+  **Measured:** ~195 MB per full release — fits Pages' 1 GB; bandwidth is the
+  limit (~1,000 machines). See [package-repository.md](package-repository.md),
+  which also flags the real blocker: ADR 0006's open question on distributing
+  `wine-sg` binaries. Spend/hosting is [DAVID].
 - **F3. Staged upgrades (download now, install on reboot).** Windows-/PureOS-
   style: fetch updates, apply on reboot into a maintenance step. Likely
   `apt` + an offline/`system-update.target` flow (systemd's `system-update`
