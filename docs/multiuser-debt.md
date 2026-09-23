@@ -337,25 +337,29 @@ SYSTEM-owned process stays denied. *Still open:* attaching a debugger to your
 own process (`DebugActiveProcess`) fails for a non-server user -- a debug-object
 gate, tracked as D19.
 
-### D19. A standard user cannot attach a debugger to their own process
+### D19. DebugActiveProcess fails in a shared prefix, for everyone
 
-Found 2026-09-23 (ntdll:info as a second Unix user: `DebugActiveProcess` on
-the test's own child fails with ERROR_ACCESS_DENIED, though D18 lets the same
-user open, suspend and read that child). Distinct from D18: the block is in
-the debug path, not the process SD -- either the debug object's access, the
-remote break-in thread the server creates, or a privilege the server checks
-for another user. Passes for the server's own user.
+Found 2026-09-23. `DebugActiveProcess` on one's own child fails with
+ERROR_ACCESS_DENIED in a system prefix -- and, narrowed with a probe, **for
+the SYSTEM account too**, not only standard users. `OpenProcess` on the same
+child with the full debug rights (`PROCESS_VM_READ | VM_WRITE |
+SUSPEND_RESUME | QUERY_INFORMATION | CREATE_THREAD`) is granted, so this is
+*not* the process-object permissions D18 fixed; the refusal is inside the
+attach (`NtDebugActiveProcess` -> `debug_process` -> `debugger_attach`, or the
+remote break-in thread). The same test passes in an ordinary (non-shared)
+prefix, so it is specific to the shared-server / session-0 arrangement.
 
-*Incurred in:* the shared server (wine-sg 0004/0005); surfaced once D18 let
-standard users open their own processes.
+*Incurred in:* the shared machine-level wineserver (wine-sg 0004/0005), most
+likely its session-0 / no-interactive-shell handling (patch 0007) crossing the
+debugger's session assumptions.
 
-*Why it matters:* JIT crash debuggers, IDEs and Visual Studio-style
-attach-to-process fail for standard users. Lower priority than D14/D17: most
-fleet tooling uses open/query/suspend (D18), not the debugger API.
+*Why it matters:* JIT crash debuggers, IDEs and attach-to-process fail. Lower
+priority than the privilege debts: it is a functional gap, not an escalation,
+and most fleet tooling uses open/query/suspend (D18), not the debugger API.
 
-*What it needs:* to trace where in `debug_process`/`debugger_attach` /
-remote-breakin the access is refused, and grant the owner the same way D18
-did for the process object.
+*What it needs:* trace the exact refusal in `debug_process`/`debugger_attach`
+under `sg_system_prefix`; it is not a DACL, since the process opens with full
+debug rights.
 
 ---
 
