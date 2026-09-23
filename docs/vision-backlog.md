@@ -69,12 +69,15 @@ tested against the wrong Wine (fixed, pending a green run).
   the S2 security model (restricted tokens, job objects, integrity levels,
   AppContainer). Interim `--no-sandbox` for testing only, never shipped.
   *Depends on:* C (security model), S2.
-- **A5. Proper Control Panel.** A real, navigable control surface. Options:
-  grow Wine's control.exe applets, or build SG panels (Settings-style) that
-  write the same registry/policy the OS reads. *Depends on:* B (theming) for
-  looks, C for anything privileged.
+- **A5. Proper Control Panel. First pass done, 2026-09-23.** `sg-control`
+  (sg-shell) is a Control Panel window showing the machine's real state --
+  edition, computer name, system type, the signed-in user and their session
+  administrator status, Windows Update management, and the count of machine
+  policies in force -- read from the live token, registry and system. `control`
+  opens it (App Paths); the Start menu lists it. Gate: sg-shell `test/
+  control-check.sh`. Open: navigable categories/applets, and settings the user
+  can change (needs the elevation broker for machine settings).
 
-### B. Look & feel
 - **B1. Proper theming (msstyles).** "So all the windows aren't ugly gray
   bars." A Windows-10-style visual style: `uxtheme` active + a `.msstyles`, so
   app title bars and controls stop being classic gray. Pairs with the taskbar
