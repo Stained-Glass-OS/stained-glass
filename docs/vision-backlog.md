@@ -41,7 +41,7 @@ spend) that must not be decided unilaterally.
 | B1 Theming | **Done, first pass.** White flat title bars and light chrome (Default User colour/metric drop-ins from sg-shell), 30px captions, flat caption buttons (wine-sg 0013); controls use Wine's own Light visual style. Verified in the image. Open: recolour Light's blue accents to our purple (an LGPL derivative, so wine-sg). |
 | A1 PowerShell 7 | **Done.** 7.6.6 in `C:\Program Files\PowerShell\7`, on PATH, Start menu; `sg-apps-check` passes in the image. Open: fails with no console and redirected output (unattended use). |
 | A2 Windows Python | **Done.** 3.14.7 with pip/venv, PEP 514, PATH, Start menu; gated in the image. |
-| A3 winget | **Spike done, runs.** Real winget-cli v1.29.380 starts under wine-sg (`--version`, `--help`, `source list`); wine-sg 0026-0027 + real winsqlite3/ICU DLLs. `search`/`install` need a large WinRT push (Windows.Web.Http, MRT, the OOP COM server) — a [DAVID]-scoped investment. |
+| A3 winget | **`winget search` WORKS (2026-09-24).** Real winget-cli queries the Microsoft Store and returns real results under wine-sg (`winget search python` -> Store packages with product IDs). Path built: `Windows.Web.Http` implemented from scratch in Wine (0028-0029, ~4500 lines: filter/client/method/request/content/response/headers/async + winhttp), `iertutil` IUriEscapeStatics (0030), real winsqlite3/ICU DLLs, wine-sg 0026-0027. Remaining: MRT/resources.pri so UI strings (column headers) are readable not keys; the community/MSIX source (packaged-COM + AppxPackaging); install (OOP COM server + Windows.Management.Deployment). Each is a large Windows subsystem. |
 | E2 RDP out | **Done.** `sg-mstsc` (Remote Desktop Connection, mstsc command line and .rdp files, injection-hardened) starts `sdl-freerdp3`; gated in sg-shell, verified in the image. |
 | A6 .NET Framework & HTML engine | **Done** (new item). Wine Mono 9.4.0 and Gecko 2.47.4 shipped unpacked and shared; the image compiles and runs a .NET Framework program. |
 | F3 Staged updates | **Done.** PackageKit offline updates via `sg-update-prepare` (daily timer); `make update-test` proves download-now, install-on-reboot. The image now also carries Debian's apt sources, which it lacked. |
@@ -62,7 +62,7 @@ tested against the wrong Wine (fixed, pending a green run).
   nothing hard. Good early win.
 - **A2. Windows Python.** Install the Windows CPython into the prefix; gate
   `python --version` and a script. *Depends on:* nothing hard.
-- **A3. winget. Spike done, 2026-09-23 — it runs.** Real Microsoft
+- **A3. winget. `winget search` WORKS, 2026-09-24.** Real Microsoft
   winget-cli v1.29.380 (not a shim) starts under wine-sg: `winget --version`,
   `winget --help` and `winget source list` (real msstore/winget CDN URLs) work.
   Path found and cleared: three system DLLs Wine lacks (real `winsqlite3.dll`
@@ -77,6 +77,13 @@ tested against the wrong Wine (fixed, pending a green run).
   keys), and for install the out-of-process COM server
   (`WindowsPackageManagerServer.exe`) + `Windows.Management.Deployment`. Feeds
   F4 (upgrades from the Windows side). *Depends on:* that WinRT work.
+
+  **Update 2026-09-24:** the Windows.Web.Http stack is implemented (wine-sg
+  0028-0029) and `iertutil` gained IUriEscapeStatics (0030); with these
+  `winget search` returns real Microsoft Store results over the Store REST API.
+  The three remaining pieces (MRT strings, community/MSIX source, install) are
+  each a large Windows subsystem; search via the msstore REST source is fully
+  working today.
 - **A4. Microsoft Edge (Wine-side).** ROADMAP **P4**. Chromium's sandbox needs
   the S2 security model (restricted tokens, job objects, integrity levels,
   AppContainer). Interim `--no-sandbox` for testing only, never shipped.
