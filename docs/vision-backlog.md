@@ -150,10 +150,12 @@ tested against the wrong Wine (fixed, pending a green run).
   network provider), UNC paths, and a user's Group Policy (Preferences drive
   maps, GPO logon scripts, user Registry.pol). Every share is mounted with the
   user's own Kerberos ticket, so the file server decides what they may reach.
-  Also the logon variables (USERDOMAIN, LOGONSERVER, HOMESHARE). Open: machine
-  Group Policy from the domain and its periodic refresh, the user's real
-  domain SID inside Wine, interoperation tested against a Windows DC and
-  Windows clients.
+  Also the logon variables (USERDOMAIN, LOGONSERVER, HOMESHARE), and
+  **machine Group Policy** from the domain (sg-gpo-machine/sg-gpupdate:
+  the computer's GPOs' registry policy into HKLM, refreshed every 90
+  minutes). Open: removing values a GPO that stopped applying had set,
+  machine startup scripts, the user's real domain SID inside Wine, and
+  interoperation tested against a Windows DC and Windows clients.
 - **D2. Host a domain / be a Domain Controller.** ROADMAP **P9**. **Working
   (2026-09-24)** as a role of the one image: `sg-dc-provision` makes a
   machine a Samba AD DC with internal DNS; every Samba service is off until a
