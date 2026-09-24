@@ -200,12 +200,21 @@ this is unblocked, and the core landed:
   administrator's program runs as the SYSTEM account with consent, is refused
   without it.
 
-**Still to wire:** the graphical consent prompt on the secure surface. Windows'
-UAC uses a full-screen secure desktop, which the compositor's lock surface
-already provides (ADR 0009), so this reuses that mechanism (a consent mode of
-sg-greeter driven like sg-lock-ui) rather than needing a new compositor mode.
-Until it lands the broker fails closed (no consent UI -> deny); the trust model
-and launch path are proven through the test consent path.
+**The consent prompt (landed 2026-09-24).** The first plan was to reuse the
+lock surface as is. That did not work: while locked, `sg-lockd` puts a lock
+screen up, and a lock screen over a consent prompt is wrong. sg-compositor
+gained a **SECURE** mode instead. It isolates the session exactly as LOCK does,
+showing and sending input to privileged clients only, but it tells watchers
+`secure` rather than `locked`. RELEASE ends it and never undoes a real lock. A
+LOCK during a prompt promotes it to a lock, and no prompt may start over a
+locked machine. The broker finds the requester's own compositor (checked by
+SO_PEERCRED), engages SECURE and runs `sg-consent.exe` on a private X server on
+the privileged socket. Anything that goes wrong denies. Evidence:
+sg-compositor `make test-secure` covers the keylogger, focus-steal and
+lock-interplay cases, and fails against a SECURE that does not isolate.
+sg-session `make test-consent` runs the broker and prompt end to end with PAM
+under pam_wrapper. It fails against a broker that skips the administrator
+check, and against one that skips SECURE.
 
 **Also still open** (as ADR 0012 already noted): elevated programs share the
 session's display, so input isolation for the elevated window (Windows' UIPI)
