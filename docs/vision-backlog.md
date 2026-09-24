@@ -105,7 +105,10 @@ tested against the wrong Wine (fixed, pending a green run).
   caption buttons (0013). Open: none for the accent recolour.
 
 ### C. Security & privilege model **[DAVID]**
-- **C1. Principal model.** Proposed by David: regular users; administrators run
+- **C1. Principal model. Signed off by David 2026-09-24 as ADR 0012** (split token;
+  administrators = `sg-admins`, elevation per program via the broker to the SYSTEM
+  account; `sgsystem` has no sudo; root is reached by the human with `sudo`).
+  Original proposal by David: regular users; administrators run
   as the *system* user (`sgsystem` → SYSTEM SID); kernel level = Linux root;
   possibly the system user has `sudo` to root (even literally `sudo su` from an
   elevated shell). **This is a [DAVID] security decision** and must be written

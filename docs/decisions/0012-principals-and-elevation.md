@@ -1,6 +1,6 @@
 # 0012. Principals and elevation: who is an administrator, and how anything gets to root
 
-- **Status:** accepted, 2026-09-22; core implemented 2026-09-23
+- **Status:** accepted, 2026-09-22; core implemented 2026-09-23; **signed off by David as the C1 principal model, 2026-09-24**
 - **Date:** 2026-09-22
 - **Deciders:** David; analysis and recommendation by Claude
 
