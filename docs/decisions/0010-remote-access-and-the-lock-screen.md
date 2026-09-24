@@ -124,6 +124,33 @@ A client that connects **without** a credential is refused today. Real Windows
 RDP shows such a client the Winlogon screen; ours will stream `sg-greeter` once
 the compositor can, which makes pattern A and B the same screen for the user.
 
+## Update: streaming the session (E1, 2026-09-24)
+
+Pattern B now ends in a desktop. What building it settled:
+
+- **A remote session is a session of its own**, not a view of the console:
+  after PAM accepts a user, `sg-rdp-authd`'s root monitor starts
+  `sg-session-start` for them under `systemd-run` (`PAMName=`, so logind and
+  the profile service see an ordinary session) with sg-compositor on its
+  headless backend, sized to the client. It gets a seat directory of its own,
+  and with it its own lock service: Win+L typed into the client locks it and
+  the password typed into the client unlocks it. Disconnecting leaves it
+  running; the next login for that user reconnects to it, as on Windows.
+- **The RDP side gains exactly one session, and only after PAM.** The monitor
+  connects to that session's privileged compositor socket and passes the
+  connection over (`SCM_RIGHTS`); the unprivileged worker never holds a
+  capability for any session whose password it has not seen accepted.
+- **Capture and injection are the compositor's privileged protocols**
+  (screencopy, virtual keyboard and pointer), so the invariant above -- a
+  user-session program can obtain neither -- is unchanged by remote access.
+- **Uncompressed bitmap updates, for now.** FreeRDP 3.15's planar encoder does
+  not round-trip (RLE streaks detail; raw planes swap red and blue), which the
+  dev-box gate's pixel-exact comparison caught. An encoder of our own for the
+  open RDP 6.0 bitmap compression spec is the planned replacement.
+- **Still open:** a user signed in at the console is refused a remote login
+  rather than having the session moved (Windows' behaviour), which needs the
+  compositor to move a session between outputs; and pattern A.
+
 ## Consequences
 
 **The security-critical invariant is one sentence:** screen capture and input

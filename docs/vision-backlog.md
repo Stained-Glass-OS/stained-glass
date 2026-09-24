@@ -130,17 +130,29 @@ tested against the wrong Wine (fixed, pending a green run).
   who-may-write.
 
 ### D. Domain
-- **D1. Domain member.** ROADMAP **P2**: winbind join, PAM login, Kerberos TGT
-  into Wine SSPI, drive maps, login scripts. *Depends on:* a test domain
-  (SGTEST.LAN).
-- **D2. Host a domain / be a Domain Controller.** ROADMAP **P9**: Samba AD DC
-  as an image *role* (one image, two roles: workstation, DC). Most ambitious;
-  latest. **Creating a DC role/repo is [DAVID].**
+- **D1. Domain member.** ROADMAP **P2**. **Working (2026-09-24):**
+  `sg-domain-join` (winbind, rid idmap, plain user names), domain sign-in at
+  the login screen, a Kerberos ticket at sign-in that Windows programs use
+  through Wine's SSPI (Kerberos and Negotiate: single sign-on), Domain Users
+  as the Windows system's users and Domain Admins as its administrators.
+  Gate: sg-image `make domain-test` (two VMs, the image's own DC role).
+  Open: drive maps, login scripts, domain Group Policy, the user's real domain
+  SID inside Wine.
+- **D2. Host a domain / be a Domain Controller.** ROADMAP **P9**. **Working
+  (2026-09-24)** as a role of the one image: `sg-dc-provision` makes a
+  machine a Samba AD DC with internal DNS; every Samba service is off until a
+  role asks. Gate: sg-image `make dc-test` (DNS SRV records, Kerberos, the
+  directory, SMB, a reboot). Built inside the existing repos -- no new repo
+  was created; whether the DC role deserves one stays **[DAVID]**.
 
 ### E. Remote access
-- **E1. RDP in (server).** Partly built: `sg-rdp-authd` (pre-auth login) and the
-  console-shadow design (ADR 0010) exist and are gated, but streaming needs
-  `sg-compositor`. *Depends on:* sg-compositor milestones.
+- **E1. RDP in (server).** **Working (2026-09-24):** sign in over RDP and get
+  a desktop, as with `mstsc` (ADR 0010 pattern B): a remote session of its own
+  (headless sg-compositor at the client's size, its own lock screen),
+  disconnect keeps it, the next login reconnects. `sg-rdpd.service`, off by
+  default. Gates: sg-session `make test-rdp-stream` (lossless, pixel-exact) and
+  sg-image `make rdp-test`. Open: taking over a session already signed in at
+  the console (E1b), a compressed codec, pattern A (console shadow).
 - **E2. RDP out (client).** An `mstsc`-like client. Cheapest path: ship an RDP
   client (FreeRDP, or Windows `mstsc` under Wine) and a launcher. *Depends on:*
   nothing hard.
@@ -160,10 +172,14 @@ tested against the wrong Wine (fixed, pending a green run).
   mechanism) or an A/B scheme. *Depends on:* F1.
 - **F4. winget-driven upgrades.** If A3 lands, updates from the Windows side too.
   *Depends on:* A3.
-- **F5. Live image + OS installer.** The image becomes a live medium with an
-  install-to-disk path: a partitioner and installer (e.g. Calamares, or a
-  scripted installer). *Depends on:* the image; a repo (F1) for a networked
-  install is nice-to-have.
+- **F5. Live image + OS installer.** **Working (2026-09-24).** Every image is
+  its own installation media: a "live" boot entry (root read-only under an
+  overlay) whose login screen is Setup, a Windows-style wizard (`sg-setup.exe`)
+  over a root service (`sg-installd`) and `sg-install` -- systemd-repart block
+  copy, root grown to the disk, a machine identity of its own, the owner as
+  administrator. Gate: sg-image `make install-test` (Setup driven through a
+  VM's keyboard onto a blank disk, then the installed disk booted alone and
+  signed in to). Open: install alongside another OS, and choosing partitions.
 
 ---
 
