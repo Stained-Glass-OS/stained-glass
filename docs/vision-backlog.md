@@ -38,7 +38,7 @@ spend) that must not be decided unilaterally.
 
 | Item | State |
 |---|---|
-| B1 Theming | **Done, first pass.** White flat title bars and light chrome (Default User colour/metric drop-ins from sg-shell), 30px captions, flat caption buttons (wine-sg 0013); controls use Wine's own Light visual style. Verified in the image. Open: recolour Light's blue accents to our purple (an LGPL derivative, so wine-sg). |
+| B1 Theming | **Done (2026-09-24).** White flat title bars and light chrome, 30px captions, flat caption buttons (wine-sg 0013); the Light visual style's blue accents are now recoloured to the project purple (wine-sg 0031 -- SVGs recoloured, build.sh regenerates the theme BMPs). Verified in the image; the installed light.msstyles carries purple and no blue. |
 | A1 PowerShell 7 | **Done.** 7.6.6 in `C:\Program Files\PowerShell\7`, on PATH, Start menu; `sg-apps-check` passes in the image. Open: fails with no console and redirected output (unattended use). |
 | A2 Windows Python | **Done.** 3.14.7 with pip/venv, PEP 514, PATH, Start menu; gated in the image. |
 | A3 winget | **`winget search` WORKS (2026-09-24).** Real winget-cli queries the Microsoft Store and returns real results under wine-sg (`winget search python` -> Store packages with product IDs). Path built: `Windows.Web.Http` implemented from scratch in Wine (0028-0029, ~4500 lines: filter/client/method/request/content/response/headers/async + winhttp), `iertutil` IUriEscapeStatics (0030), real winsqlite3/ICU DLLs, wine-sg 0026-0027. Remaining: MRT/resources.pri so UI strings (column headers) are readable not keys; the community/MSIX source (packaged-COM + AppxPackaging); install (OOP COM server + Windows.Management.Deployment). Each is a large Windows subsystem. |
@@ -97,11 +97,12 @@ tested against the wrong Wine (fixed, pending a green run).
   control-check.sh`. Open: navigable categories/applets, and settings the user
   can change (needs the elevation broker for machine settings).
 
-- **B1. Proper theming (msstyles).** "So all the windows aren't ugly gray
-  bars." A Windows-10-style visual style: `uxtheme` active + a `.msstyles`, so
-  app title bars and controls stop being classic gray. Pairs with the taskbar
-  work just shipped (wine-sg patch 0012). *Depends on:* nothing hard. **Highest
-  visible value, unblocked — do first.**
+- **B1. Proper theming (msstyles). Done, 2026-09-24.** A Windows-10-style
+  visual style via `uxtheme` + the Light `.msstyles`, its blue accents recoloured
+  to the project purple (wine-sg 0031: the theme's source SVGs recoloured, and
+  build.sh regenerates the packed .bmp/.cur/.ico from them since a normal build
+  ships pre-rendered images). Pairs with the taskbar (wine-sg 0012) and flat
+  caption buttons (0013). Open: none for the accent recolour.
 
 ### C. Security & privilege model **[DAVID]**
 - **C1. Principal model.** Proposed by David: regular users; administrators run
