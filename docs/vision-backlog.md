@@ -84,10 +84,19 @@ tested against the wrong Wine (fixed, pending a green run).
   The three remaining pieces (MRT strings, community/MSIX source, install) are
   each a large Windows subsystem; search via the msstore REST source is fully
   working today.
-- **A4. Microsoft Edge (Wine-side).** ROADMAP **P4**. Chromium's sandbox needs
-  the S2 security model (restricted tokens, job objects, integrity levels,
-  AppContainer). Interim `--no-sandbox` for testing only, never shipped.
-  *Depends on:* C (security model), S2.
+
+  **Update 2026-09-24 (later):** install/list/uninstall of MSI and NSIS
+  packages work (wine-sg 0043-0045), and **MSIX deployment** is in
+  (0060-0063). PackageManager installs signed packages and bundles: the
+  signature must be trusted, and the block map is checked. It registers them,
+  gives them Start menu shortcuts, lists and removes them, and a packaged
+  app gets its package identity. Open: dependency (framework) and resource
+  packages, app execution aliases.
+- **A4. Microsoft Edge (Wine-side).** ROADMAP **P4**. **Working, sandbox
+  on (2026-09-24):** Edge, supplied by the user, installs silently from its
+  MSI and shows, scripts and paints pages with its own sandbox. Its renderers
+  run in an AppContainer at low integrity with restricted tokens (wine-sg
+  0049-0055). Gate: wine-sg `make test-edge`.
 - **A5. Proper Control Panel. First pass done, 2026-09-23.** `sg-control`
   (sg-shell) is a Control Panel window showing the machine's real state --
   edition, computer name, system type, the signed-in user and their session
@@ -136,8 +145,15 @@ tested against the wrong Wine (fixed, pending a green run).
   through Wine's SSPI (Kerberos and Negotiate: single sign-on), Domain Users
   as the Windows system's users and Domain Admins as its administrators.
   Gate: sg-image `make domain-test` (two VMs, the image's own DC role).
-  Open: drive maps, login scripts, domain Group Policy, the user's real domain
-  SID inside Wine.
+  **Also working (2026-09-24):** the home drive (homeDirectory/homeDrive),
+  NETLOGON logon scripts, `NET USE` and WNetAddConnection2 (the Windows
+  network provider), UNC paths, and a user's Group Policy (Preferences drive
+  maps, GPO logon scripts, user Registry.pol). Every share is mounted with the
+  user's own Kerberos ticket, so the file server decides what they may reach.
+  Also the logon variables (USERDOMAIN, LOGONSERVER, HOMESHARE). Open: machine
+  Group Policy from the domain and its periodic refresh, the user's real
+  domain SID inside Wine, interoperation tested against a Windows DC and
+  Windows clients.
 - **D2. Host a domain / be a Domain Controller.** ROADMAP **P9**. **Working
   (2026-09-24)** as a role of the one image: `sg-dc-provision` makes a
   machine a Samba AD DC with internal DNS; every Samba service is off until a
@@ -151,8 +167,10 @@ tested against the wrong Wine (fixed, pending a green run).
   (headless sg-compositor at the client's size, its own lock screen),
   disconnect keeps it, the next login reconnects. `sg-rdpd.service`, off by
   default. Gates: sg-session `make test-rdp-stream` (lossless, pixel-exact) and
-  sg-image `make rdp-test`. Open: taking over a session already signed in at
-  the console (E1b), a compressed codec, pattern A (console shadow).
+  sg-image `make rdp-test`. **E1b done (2026-09-24):** a login for a user
+  signed in at the console takes that session over, as on Windows. The console
+  goes dark and deaf; Ctrl+Alt+Del there, or disconnecting, gives it back
+  locked. Open: a compressed codec, pattern A (console shadow).
 - **E2. RDP out (client).** An `mstsc`-like client. Cheapest path: ship an RDP
   client (FreeRDP, or Windows `mstsc` under Wine) and a launcher. *Depends on:*
   nothing hard.
