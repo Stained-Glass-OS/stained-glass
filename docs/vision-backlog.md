@@ -153,9 +153,11 @@ tested against the wrong Wine (fixed, pending a green run).
   Also the logon variables (USERDOMAIN, LOGONSERVER, HOMESHARE), and
   **machine Group Policy** from the domain (sg-gpo-machine/sg-gpupdate:
   the computer's GPOs' registry policy into HKLM, refreshed every 90
-  minutes). Open: removing values a GPO that stopped applying had set,
-  machine startup scripts, the user's real domain SID inside Wine, and
-  interoperation tested against a Windows DC and Windows clients.
+  minutes) -- and Group Policy **de-tattoos** on both machine (HKLM) and
+  user (HKCU) sides, so a policy removed from a GPO stops applying at the
+  next refresh/login. Open: machine startup scripts, the user's real domain
+  SID inside Wine, and interoperation tested against a Windows DC and Windows
+  clients.
 - **D2. Host a domain / be a Domain Controller.** ROADMAP **P9**. **Working
   (2026-09-24)** as a role of the one image: `sg-dc-provision` makes a
   machine a Samba AD DC with internal DNS; every Samba service is off until a
