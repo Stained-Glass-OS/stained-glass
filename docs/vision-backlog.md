@@ -49,6 +49,21 @@ spend) that must not be decided unilaterally.
 | C1 Principals / C2 Elevation | **Core implemented** (ADR 0012). Administrators = `sg-admins` (also sudo); the broker `sg-brokerd` starts a program as the SYSTEM account after consent; `sg-elevate` + wine-sg 0022 wire "Run as administrator"; standard users cannot self-elevate (0019). Gate `make elevate-test`. **Consent prompt landed 2026-09-24**: sg-compositor SECURE mode + `sg-consent.exe` driven by the broker (Yes/No for administrators, administrator credentials otherwise; gates `make test-secure`, `make test-consent`). Remaining: elevated-window input isolation (UIPI). |
 | Security blocker (D14) | **Fixed.** ADR 0013 option D implemented (wine-sg 0014-0016): a user's programs open, create, delete, rename, reopen and chmod files with the user's own Unix rights. `sg-file-access-check` 4/4 in the image. Follow-ons: user SIDs have names (D12, wine-sg 0017); new users get their own profile and TEMP (D15, wine-sg 0018 + a login-time profile step). Open: device nodes; the shared server cannot signal another user's threads (D16). C1/C2 are unblocked. |
 
+### 2026-09-24: shell, theme, Control Panel, installer, networking
+
+| Item | State |
+|---|---|
+| Text and chrome | **Done.** ClearType text that the Windows setting controls (wine-sg 0064); Segoe UI 9 pt as Inter, metric-compatible Liberation/Carlito/Caladea/Cascadia for Arial, Times, Courier, Calibri, Cambria, Consolas (sg-shell); flat Windows-10 scroll bars (0065); the theme's own accents purple (0066). |
+| Virtual desktops | **Done.** Cloaked windows (0067: `DWMWA_CLOAK`, `DWMWA_CLOAKED`); desktops, Task View (Win+Tab, taskbar button, thumbnails, drag a window onto a desktop), Alt+Tab, `IVirtualDesktopManager`, state in Windows' registry location (0068). |
+| Shell keys and snapping | **Done.** The Windows key opens Start; Win+D/M/E/R/I/X/Pause, Win+arrows (0071); drag to an edge snaps, with a preview (0073, 0075); the work area is the taskbar's for every program (0074). `control.exe` run directly opens our Control Panel (0072). |
+| Wallpaper | **Done.** Any picture format, Windows' styles, no paint-over (0069); our own generated stained-glass wallpapers, the default (sg-shell). |
+| Control Panel | **Done.** Windows-10 category Control Panel with System (rename, join domain), Programs and Features, User Accounts, Date and Time, Personalization, Windows Update, Network and Sharing Center, hosted .cpl applets; admin changes through **sg-admind** (ADR 0012 amended, approved by David). |
+| Networking | **Done.** NetworkManager with Wi-Fi and firmware; `sg-netctl`; Network Connections with the TCP/IPv4 dialog; the taskbar Wi-Fi flyout; administrators set static addresses, users join Wi-Fi; VM gate with a simulated radio. |
+| Installer | **Done.** Windows-Setup-style Setup with a partitioner (installs beside Windows without touching it), a live "Try Stained Glass OS" desktop, automatic drivers (non-free, NVIDIA via nvidia-detect, Secure Boot MOK enrolment); install gates on a blank and a dual-boot disk. |
+| Shell folders | **Fixed.** A standard user's Desktop was cached empty (shortcuts did not open, no desktop icons) (0070). |
+| CI | **Green** on every repo (sg-image builds the packages on trixie). |
+| Open | Cross-process window capture (real thumbnails for never-active windows); dark mode; netsh/ipconfig on sg-netctl; OOBE after install; a signed boot chain (shim); Windows interop tests (needs a Windows licence). |
+
 Found along the way: the session disabled .NET system-wide (fixed); wine-sg's
 build did not apply patches added after first unpack (fixed); sg-session CI
 tested against the wrong Wine (fixed, pending a green run).
