@@ -14,7 +14,7 @@ Windows side, and a shell, Control Panel and apps written from scratch to behave
 
 </div>
 
-![The Stained Glass OS desktop, with Notepad open](img/live-desktop.png){: .shot}
+![The Stained Glass OS desktop with the Start menu open](img/desktop.png){: .shot}
 
 ## What it is
 
@@ -75,6 +75,12 @@ Everything is free software (AGPL-3.0 for our code). No Microsoft code or artwor
 compatibility comes from re-implementing the documented Windows APIs ourselves.
 
 </div>
+</div>
+
+<div class="grid" markdown="1">
+![File Explorer](img/explorer.png){: .shot}
+![Notepad](img/notepad.png){: .shot}
+![Settings](img/settings.png){: .shot}
 </div>
 
 ## Download {#download}

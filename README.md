@@ -1,119 +1,114 @@
 # Stained Glass OS
 
-An open-source, drop-in Windows replacement for managed fleets.
+**A free, open-source operating system that looks and works like Windows 10 — and runs
+Windows programs.**
 
-Linux kernel and a Debian base drive the hardware. Wine runs above it as a
-**system-wide Windows personality** rather than a per-user prefix: one machine
-hive, one wineserver, a shell that lives inside the Wine system. The Linux side
-supplies only the compositor, the greeter and the lock screen.
+**Website: [freesoft.page](https://freesoft.page)** — download the ISO, read the docs, set up
+the package repository.
 
-The goal is a machine that an existing Windows fleet can absorb without
-changing how it is managed — it joins an Active Directory domain (or hosts one),
-applies GPOs, runs login scripts and PowerShell, and answers the remote
-management tools an admin already uses.
+![The Stained Glass OS desktop with the Start menu open](docs/images/desktop.png)
 
-**Status: Phase 0 complete.** A Debian image boots in QEMU straight into Wine's
-`explorer` as the shell, with a taskbar and a running Win32 app, and the boot
-gate passes. Nothing here is usable as a daily driver yet — see the
-[Phase 0 report](docs/phase0-report.md) for what works, what does not, and the
-decisions waiting on David.
+Debian underneath, [Wine](https://www.winehq.org/) with our own patch series running the whole
+Windows side as one system-wide Windows personality (one machine hive, one wineserver, real
+Windows-style accounts), and a shell, Control Panel, Settings and apps written from scratch to
+behave like the real thing. It is built for desktops and managed fleets: it joins an Active
+Directory domain (or hosts one), applies Group Policy, runs logon scripts and PowerShell, and
+takes Remote Desktop connections.
 
-![Phase 0 boot gate screenshot](docs/images/phase0-boot-gate.png)
+**Status: in active development, not yet a daily driver.** The live ISO boots, runs and
+installs (beside Windows, too); what works and what is left is tracked in
+[docs/whats-left.md](docs/whats-left.md) and on the website.
 
-## What this repo is
+## Try it
 
-The meta repo. It holds the brief, the roadmap, and the architecture decision
-records. No code ships from here.
+Download **[sg-live-latest.iso](https://freesoft.page/iso/sg-live-latest.iso)** (about 2 GB,
+64-bit UEFI PCs; checksums in [/iso/](https://freesoft.page/iso/)). Write it to a USB stick or
+attach it to a VM's CD drive with **UEFI firmware on** (4 GB RAM, 24 GB disk), boot
+**Stained Glass OS (live: try or install)**, and choose *Try* or *Install now* in Setup.
 
-- [`docs/BRIEF.md`](docs/BRIEF.md) — the full project brief. Read this first.
-- [`ROADMAP.md`](ROADMAP.md) — phases, and what "done" means for each.
+<p>
+<img src="docs/images/explorer.png" alt="File Explorer" width="49%">
+<img src="docs/images/settings.png" alt="Settings" width="49%">
+</p>
+<p>
+<img src="docs/images/setup.png" alt="Setup: choosing where to install" width="49%">
+<img src="docs/images/notepad.png" alt="Notepad as a code editor" width="49%">
+</p>
+
+## What's in it
+
+- **The Windows 10 shell:** Start menu, taskbar, virtual desktops and Task View, snap,
+  Win-key shortcuts, File Explorer (search, thumbnails, preview pane, progress and conflict
+  dialogs), Settings (Win+I) and a full Control Panel, dark mode, a first-run setup.
+- **Windows programs:** 32- and 64-bit from one amd64 install (Wine's new WoW64), .NET
+  Framework, MSI/NSIS installers, winget, PowerShell 7, Python, Git for Windows, WebView2 apps,
+  and Microsoft Edge when you install it yourself.
+- **The apps a Windows user expects:** Notepad (a real code editor), Calculator, Paint,
+  Snipping Tool, Photos, Media Player, a PDF viewer, Terminal, Task Manager, Alarms & Clock,
+  Sticky Notes, Character Map, WordPad, and the admin tools — Services, Event Viewer, Device
+  Manager, Disk Management, Computer Management. See [docs/default-apps.md](docs/default-apps.md).
+- **Voice typing (Win+H)** with NVIDIA's open Parakeet model, installed with the system and
+  running entirely offline.
+- **Fleet features:** multiple users with administrators and UAC-style elevation, a real lock
+  screen, AD domain join or domain controller (Samba), Group Policy, drive maps, logon scripts,
+  Remote Desktop in.
+
+## Repositories
+
+| Repo | What it is |
+|---|---|
+| [`stained-glass`](https://github.com/Stained-Glass-OS/stained-glass) | This repo: the brief, roadmap, architecture decisions, docs and the website (`site/`) |
+| [`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg) | Wine 10.0 plus our patch series: multi-user system prefix, shell, Notepad, File Explorer, compatibility fixes |
+| [`sg-shell`](https://github.com/Stained-Glass-OS/sg-shell) | Start menu, taskbar pieces, Control Panel, Settings and the apps |
+| [`sg-session`](https://github.com/Stained-Glass-OS/sg-session) | Sessions, sign-in and lock screen, the installer, first-run setup, system services and helpers |
+| [`sg-compositor`](https://github.com/Stained-Glass-OS/sg-compositor) | The Wayland compositor (wlroots, derived from cage) |
+| [`sg-image`](https://github.com/Stained-Glass-OS/sg-image) | The image, the ISO, the apt repository publishing, and the VM test gates |
+
+Packages: the signed apt repository at [freesoft.page/apt](https://freesoft.page/apt/).
+
+## Docs in this repo
+
+- [`docs/BRIEF.md`](docs/BRIEF.md) — the project brief. Read this first.
+- [`ROADMAP.md`](ROADMAP.md) — phases and what "done" means for each.
+- [`docs/whats-left.md`](docs/whats-left.md) — current status and open work.
 - [`docs/decisions/`](docs/decisions/) — ADRs. Every non-obvious choice lands here.
-- [`docs/multiuser-debt.md`](docs/multiuser-debt.md) — every place the current
-  code assumes a single user. This list seeds the multi-user wineserver work.
-- [`docs/phase0-report.md`](docs/phase0-report.md) — what Phase 0 found,
-  including what broke on the way.
-- [`docs/s2-wineserver-analysis.md`](docs/s2-wineserver-analysis.md) — whether a
-  machine-level wineserver is patchable or a rewrite. **It is a patch set.**
-- [`docs/p7-shell-options.md`](docs/p7-shell-options.md) — what a Windows 10-like
-  shell would actually be built on. Wine's explorer already implements
-  `Shell_TrayWnd`; what looks old is the theme, not the structure.
+- [`docs/package-repository.md`](docs/package-repository.md) — the apt repository and its key.
+- [`docs/multiuser-debt.md`](docs/multiuser-debt.md) — single-user assumptions still in the code.
 
-**32-bit Windows applications run on a pure amd64 image.** The image ships
-[`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg), built with
-`--enable-archs=i386,x86_64` — no i386 multiarch anywhere. The boot gate proves
-it end to end by launching `syswow64\notepad.exe` into the shell, and the
-screenshot above is that 32-bit Notepad. See
-[ADR 0005](docs/decisions/0005-building-wine-ourselves.md).
-
-## Repo map
-
-Repos are created lazily, when the subproject actually starts. Empty
-placeholders are noise.
-
-| Repo | Purpose | Status |
-|---|---|---|
-| [`stained-glass`](https://github.com/Stained-Glass-OS/stained-glass) | Meta: brief, roadmap, ADRs, cross-repo issues | active |
-| [`sg-image`](https://github.com/Stained-Glass-OS/sg-image) | mkosi config → bootable immutable Debian image; QEMU boot gate | active |
-| [`sg-session`](https://github.com/Stained-Glass-OS/sg-session) | Session glue: compositor launch, system prefix init, explorer start | active |
-| `sg-testlab` | Oracle harness: same test binaries on a Windows VM and on SG, diffed | Phase 1 |
-| [`wine-sg`](https://github.com/Stained-Glass-OS/wine-sg) | Wine built for new WoW64; future multi-user wineserver patches | active |
-| `wdf-wine` | Port of Microsoft's WDF (KMDF/UMDF) onto Wine's ntoskrnl | Phase 1 (S1) |
-| `sg-pnp` | udev hotplug → INF match → auto-load into winedevice | later |
-| `gpo-agent` | SYSVOL GPOs → system hive, scripts | Phase 3 |
-| `prt-broker` | Entra device registration and PRT lifecycle | Phase 5 |
-| `sg-shell` | The desktop shell | Phase 7 |
-| `sg-compositor` | wlroots compositor with taskbar/toplevel integration | Phase 8 |
-| `sg-greeter` | greetd greeter and lock screen | Phase 8 |
+All of them are also on the website, at [freesoft.page/docs](https://freesoft.page/docs/index.html).
 
 > [!IMPORTANT]
-> **Wine prohibits LLM-generated code, so we do not upstream.** Wine changes stay
-> downstream in `wine-sg` permanently, which means we own them and every upstream
-> release is a rebase we do ourselves. See
-> [ADR 0006](docs/decisions/0006-wine-llm-contribution-policy.md) — including the
-> licensing question it leaves open.
+> **Wine prohibits LLM-generated code, so we do not upstream.** Wine changes stay downstream in
+> `wine-sg` permanently: we own them, and every upstream release is a rebase we do ourselves.
+> See [ADR 0006](docs/decisions/0006-wine-llm-contribution-policy.md).
 
 ## Ground rules
 
 These are not negotiable; they are what keeps the project shippable.
 
-1. **Clean room.** No leaked Microsoft source, ever. No disassembling or
-   decompiling Microsoft binaries. Black-box behavioral testing against real
-   Windows is fine and encouraged. Microsoft-published open source (e.g.
-   `microsoft/Windows-Driver-Frameworks`, MIT) is fine, but it stays in its own
-   repo — never inside the Wine tree, so Wine patches stay upstreamable.
-2. **Test domains only.** Lab realm `SGTEST.LAN` and a developer Entra tenant.
-   Never a production domain, tenant or real credential. Never commit secrets.
-3. **Every piece has a scripted gate.** A subproject is not "working" until
-   `make test` exits 0 headlessly. No gate, no merge.
-4. **Don't fork until a patch forces it.** Start on packaged upstream Wine.
-   Shape every Wine patch for upstream submission: small, tested, one concern.
-5. **Packaging from day one.** Each repo carries `debian/` and builds a `.deb` in CI.
-6. **Record decisions.** ADRs in `docs/decisions/`. When you evaluate
-   alternatives, write down what broke and why.
-7. **Small PRs, conventional commits, CI green.**
+1. **Clean room.** No leaked Microsoft source, ever. No disassembling or decompiling Microsoft
+   binaries, no Microsoft artwork. Compatibility comes from re-implementing the documented APIs
+   ourselves. Black-box testing against real Windows is fine.
+2. **Test domains only.** Lab realm `SGTEST.LAN` and a developer Entra tenant. Never a
+   production domain, tenant or real credential. Never commit secrets.
+3. **Every piece has a scripted gate.** Nothing is "working" until a script says so with an
+   exit code. No gate, no merge.
+4. **Small, tested, one-concern patches**, so the Wine series survives rebasing.
+5. **Packaging from day one.** Each repo builds a `.deb` in CI.
+6. **Record decisions.** ADRs in `docs/decisions/`, with what broke and why.
+7. **We never ship Microsoft's binaries.** Users install proprietary software (Edge, Office,
+   winget's App Installer) themselves; we make it run.
 
 ## Non-goals
 
 - Reimplementing the NT kernel. That is ReactOS's path, not ours.
 - Windows PCIe/GPU/storage kernel drivers. Linux drivers cover that hardware.
-- Running Microsoft's closed identity stack. We implement the documented
-  interfaces instead.
-- Proton. We use upstream Wine (or wine-staging) plus DXVK and VKD3D-Proton as
-  separate components.
+- Running Microsoft's closed identity stack. We implement the documented interfaces instead.
+- Secure Boot signing and legacy BIOS boot: UEFI is the target.
 
 ## License
 
-**New code is AGPL-3.0-or-later.** Documentation in this repo is CC-BY-SA-4.0.
-See [ADR 0004](docs/decisions/0004-licensing.md) for the full picture, including
-the two places AGPL is not available to us:
-
-- **`wine-sg` is LGPL-2.1+**, because it is a fork of Wine, and **anything
-  destined for upstream Wine must be LGPL-2.1+ too.** AGPL-3.0 code cannot be
-  incorporated into an LGPL-2.1+ project, so a Wine patch written in an AGPL
-  repo can never be submitted. Wine-bound code is segregated by repo for this
-  reason, not merely by directory.
-- **`wdf-wine` is MIT**, Microsoft's license for the WDF source it ports.
-
-`sg-shell`'s license is settled by [ADR 0007](docs/decisions/0007-shell-strategy.md):
-explorer changes are LGPL-2.1+ patches in `wine-sg`, our own panels are separate
-AGPL programs docked over the AppBar protocol.
+**New code is AGPL-3.0-or-later.** Documentation in this repo is CC-BY-SA-4.0. **`wine-sg` is
+LGPL-2.1+**, as a fork of Wine. See [ADR 0004](docs/decisions/0004-licensing.md) and
+[ADR 0007](docs/decisions/0007-shell-strategy.md). Not affiliated with Microsoft; Windows is a
+trademark of Microsoft Corporation.
