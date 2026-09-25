@@ -49,10 +49,12 @@ the app inventory is `default-apps.md`.
 ### Settings / shell
 - The taskbar ignores Settings' Taskbar/Start options; the lock screen
   ignores the chosen picture.
-- Screen never turns off when idle: sg-compositor lacks the output-power
-  protocol.
+- Screen off on idle and Sleep/Hibernate in Start: done (sg-compositor
+  0.2.0+sg5, sg-session 0.1.0-22, sg-shell 0.1.0-31). Windows programs
+  cannot yet keep the screen on (`SetThreadExecutionState` does not reach
+  the compositor); not yet tested on real hardware/VM suspend.
 - Terminal: no split panes or search.
-- Dark mode (system-wide), OOBE (first-run setup), Sleep in Start.
+- Dark mode (system-wide), OOBE (first-run setup).
 
 ### Admin tools
 - Disk Management: no create/delete/resize, no SMART.
