@@ -60,13 +60,14 @@ the app inventory is `default-apps.md`.
 - Dark mode (system-wide), OOBE (first-run setup).
 
 ### Admin tools
-- Disk Management: no create/delete/resize, no SMART.
-- Services: no per-service security (`sc sdset`).
-- `lusrmgr.msc` / `fsmgmt.msc` files not created yet.
-- Device Manager: no enable/disable.
-- Nothing writes the Security event log yet; its files are readable by the
-  prefix group at the Linux level.
-- `msinfo32 /report` returns before the file is written.
+- Done 2026-09-25 (wine-sg 10.0-45, sg-session 0.1.0-26, sg-shell 0.1.0-39):
+  partitioning (new/delete/extend/shrink), SMART, device disable/enable,
+  per-service security, lusrmgr/fsmgmt.msc, Security log (logon, logoff,
+  elevation) with 0700/0600 files, msinfo32 /report.
+- Left: failed passwords at the login screen are not logged (pam_exec runs
+  only on success); no FAT/exFAT resize; device disable covers PCI and USB
+  only; the Services Security tab is read-only (use `sc sdset`); SMART
+  untested against real smartctl output.
 
 ### Missing apps (ranked)
 1. A web browser and PDF viewer out of the box (only Internet Explorer on
