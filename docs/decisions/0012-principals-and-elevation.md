@@ -247,3 +247,33 @@ mapping (P2).
   components use both today (sg-mstsc's App Paths entry, patch 0010). Track as
   debt, and decide when the broker is designed.
 - **Per-administrator elevated identities** wait for SID/group mapping (P2).
+
+## Amendment (2026-09-24): SYSTEM may ask for a fixed list of root operations
+
+**Decided by David: approved.**
+
+The Control Panel (sg-shell's sg-control) changes machine settings the way
+Windows' does: create and remove accounts, change an account's type or
+password, rename the computer, join a domain, set the time zone and time
+sync, check for updates. Those are root operations on Linux. They go through
+**sg-admind** (sg-shell `admin/`), a root service started by a systemd
+`.path` unit, which serves requests dropped in a spool only the SYSTEM
+account (`sgsystem`) can write.
+
+This changes "SYSTEM is unprivileged on Unix": SYSTEM may now *request*, not
+perform, a **fixed, validated list** of root operations. That matches
+Windows, where LocalSystem outranks an administrator, and it keeps the
+principles of this ADR:
+
+- A program reaches SYSTEM only through the elevation broker, after the
+  consent prompt on the secure surface (administrators) or an
+  administrator's credentials (everyone else).
+- sg-admind trusts nothing but the request's owner (SYSTEM) and the request's
+  content; every operation validates its arguments (account names, reserved
+  accounts, the last administrator, zones that exist in zoneinfo) and refuses
+  symlinks and requests not owned by SYSTEM. There is no generic "run this as
+  root".
+- Passwords travel in the request body, never on a command line or in logs.
+
+Gate: sg-shell `test/admind-check.sh` (every operation and every refusal;
+dropping the owner check or logging passwords turns it red).
