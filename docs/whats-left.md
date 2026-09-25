@@ -47,8 +47,11 @@ the app inventory is `default-apps.md`.
   new strings English only.
 
 ### Settings / shell
-- The taskbar ignores Settings' Taskbar/Start options; the lock screen
-  ignores the chosen picture.
+- The taskbar ignores Settings' Taskbar/Start options.
+- Lock screen picture: done (sg-session 0.1.0-23, sg-shell 0.1.0-34) --
+  the chosen picture with the clock, lifted to a blurred sign-in pane. Not
+  yet: the curtain coming back after a minute idle, Spotlight, and
+  publishing a picture chosen before this existed.
 - Screen off on idle and Sleep/Hibernate in Start: done (sg-compositor
   0.2.0+sg5, sg-session 0.1.0-22, sg-shell 0.1.0-31). Windows programs
   cannot yet keep the screen on (`SetThreadExecutionState` does not reach
