@@ -75,6 +75,7 @@ the app inventory is `default-apps.md`.
   untested against real smartctl output.
 
 ### Missing apps (ranked)
+<<<<<<< Updated upstream
 1. A web browser and PDF viewer out of the box (only Internet Explorer on
    Gecko 2.47; Edge is user-supplied).
 2. Done 2026-09-25: WordPad (sg-shell 0.1.0-40, wine-sg 0180/0184 --
@@ -85,6 +86,14 @@ the app inventory is `default-apps.md`.
    tables and OLE objects, .doc; Magnifier lens resizing and GL/Vulkan
    windows in lens/full screen; OSK non-US labels; hiding fonts by
    language.
+=======
+1. ~~A web browser and PDF viewer out of the box~~ -- done (PDF Viewer on
+   poppler; Get a web browser; WebView2 apps draw with wine-sg 0190-0191).
+   Still open: Wine's HKCR does not merge the user's `Software\Classes`
+   (Default apps choices for file types do not take effect; a wine-sg fix).
+2. WordPad refresh; Magnifier and On-Screen Keyboard; font viewer and the
+   Fonts folder.
+>>>>>>> Stashed changes
 
 ### Voice typing
 - Done 2026-09-25 (sg-session 0.1.0-27, sg-shell 0.1.0-36): partial text

@@ -62,6 +62,8 @@ list in `build_list()` (`sg-shell/src/sg-start.c`) and its settings entries.
 | sg-media | Media Player (`wmplayer.exe`, 17 audio/video types) | NEW 0.1.0-11: DirectShow via winegstreamer; needs the GStreamer plugin packages (sg-image). Gate 24. | yes |
 | sg-sticky | Sticky Notes (`stikynot.exe`) | NEW 0.1.0-16: rich-text notes, colours, notes list + search, autosave/restore. Gate 28. | yes |
 | sg-charmap | Character Map (`charmap.exe`) | NEW 0.1.0-18: font grid, magnifier, characters to copy, Advanced view search by U+ and name, Unicode names. Gate 20. | yes |
+| sg-pdf | PDF viewing (Windows: Edge) -- `.pdf`, the Print verb | NEW 0.1.0-33: continuous scroll, zoom/fit width/fit page, rotate, thumbnails and bookmarks, find with highlights, select + copy, links, print, passwords. Pages rendered by Debian's poppler (sg-session's `sg-pdf`, 0.1.0-25; sg-image installs `gir1.2-poppler-0.18`). Gate 32. | yes ("PDF Viewer") |
+| sg-browser | Get a web browser; the `http`/`https`/`.html` handler until one is chosen | NEW 0.1.0-38: installs Firefox, Chrome or Brave from its maker (winget-pkgs manifest, SHA-256 checked; winget when the user has it), makes it the default, opens the link; one browser: opens there; several: "How do you want to open this?"; honours the user's choice (UserChoice). Gate 29 (+3 online: real Firefox 156 installed). | yes |
 
 ## Bundled applications (sg-image stages, sg-session installs)
 
@@ -116,17 +118,20 @@ re-imported (sg-session: `sg-prefix-init` does not re-run defaults on an initial
 | Resource Monitor | None (Task Manager's Performance tab). |
 | Remote Desktop Connection | **Done earlier** (sg-mstsc). |
 | WordPad | **Done** (sg-wordpad) -- ribbon, ruler, RTF/.docx/.odt/text, pictures, printing and preview (RichEdit EM_FORMATRANGE, wine-sg 0184). |
-| PDF viewing | None out of the box (Edge is user-supplied; iexplore/Gecko cannot show PDFs). |
-| Web browser | Only Wine's Internet Explorer on Gecko 2.47 -- not usable for today's web. Users install Edge/Firefox. |
+| PDF viewing | **Done** (sg-pdf, on poppler). |
+| Web browser | **Get a web browser** (sg-browser) installs the user's choice from its maker; the first-run setup offers Firefox too. We ship none (Edge is Microsoft's). Internet Explorer (Gecko 2.47) for simple pages. |
+| WebView2 apps | Work with the user-installed Evergreen runtime since wine-sg 10.0-52 (0190-0191: DirectComposition and composition swap chains); before, pages loaded but were never drawn. Gate `make test-webview2`. |
 | Fonts viewer | **Done** (sg-fontview: fontview.exe, the Fonts folder, per-user and all-users install; wine-sg 0183). |
 | Help (Get Help, .chm) | hh.exe reads .chm; no Tips/Get Help app. |
 | Notepad, File Explorer | Owned by other workers. |
 
 ### Remaining gaps, ranked (what a Windows user reaches for first)
 
-1. **A web browser and PDF viewing** -- the biggest hole; decide policy (a
-   first-run "get a browser" page, or reimplementing a PDF viewer on a
-   free renderer -- clean-room rule applies).
+1. ~~A web browser and PDF viewing~~ -- **done**: PDF Viewer (poppler),
+   Get a web browser (installs from the maker), WebView2 apps (0190-0191).
+   Open: Wine's HKEY_CLASSES_ROOT does not merge the user's
+   `Software\Classes`, so a Default apps choice for a *file type* does not
+   take effect (web links do: sg-browser honours UserChoice).
 2. **Settings app** (Windows 10/11 Settings layout over the Control Panel's
    pages) -- Win+I goes to the Control Panel today.
 3. ~~Windows Terminal~~ -- done (sg-terminal).
