@@ -10,6 +10,14 @@ Docs only. No code ships from here.
 - `docs/decisions/` — ADRs, numbered `NNNN-title.md`.
 - `docs/multiuser-debt.md` — the running list of single-user assumptions.
 
+## The website
+
+`site/` builds https://freesoft.page (the project's server; ssh key
+`~/.ssh/sg`, Caddy serving `/srv/www`): `site/index.md` is the front page and
+every `docs/*.md` and ADR is rendered under `/docs/`. `site/publish.sh` builds
+and rsyncs it, leaving `/apt/` (sg-image `make publish`) and `/iso/` (sg-image
+`make upload-iso`) alone. Republish after changing any doc.
+
 ## Working here
 
 There is no build and no test. The gate on this repo is review.
