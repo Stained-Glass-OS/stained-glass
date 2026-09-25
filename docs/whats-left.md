@@ -43,8 +43,11 @@ the app inventory is `default-apps.md`.
 - "Send to > Compressed (zipped) folder" (per-user SendTo item, sg-session).
 
 ### Notepad
-- Menu bar stays light in dark mode; printing untested (no printer);
-  new strings English only.
+- Done 2026-09-25 (wine-sg 10.0-51): the menu bar follows the dark theme
+  (0100 + 0188), Page Setup's Header/Footer boxes with &l/&c/&r (printed
+  pages checked as EMF). Left: popup menus stay light unless the system
+  scheme is dark; printing to a real printer untested; new strings English
+  only.
 
 ### Settings / shell
 - The taskbar ignores Settings' Taskbar/Start options.
@@ -56,7 +59,9 @@ the app inventory is `default-apps.md`.
   0.2.0+sg5, sg-session 0.1.0-22, sg-shell 0.1.0-31). Windows programs
   cannot yet keep the screen on (`SetThreadExecutionState` does not reach
   the compositor); not yet tested on real hardware/VM suspend.
-- Terminal: no split panes or search.
+- Terminal: split panes and search done (sg-shell 0.1.0-32). Left: a
+  settings.json of its own, user profiles, tabs in the title bar, bracketed
+  paste, mouse reporting, dragging the divider with the mouse.
 - Dark mode (system-wide), OOBE (first-run setup).
 
 ### Admin tools
@@ -72,13 +77,22 @@ the app inventory is `default-apps.md`.
 ### Missing apps (ranked)
 1. A web browser and PDF viewer out of the box (only Internet Explorer on
    Gecko 2.47; Edge is user-supplied).
-2. WordPad refresh; Magnifier and On-Screen Keyboard; font viewer and the
-   Fonts folder.
+2. Done 2026-09-25: WordPad (sg-shell 0.1.0-40, wine-sg 0180/0184 --
+   ribbon, ruler, RTF/.docx/.odt/text, pictures, printing and preview
+   through RichEdit's new EM_FORMATRANGE); Magnifier and On-Screen Keyboard
+   (sg-shell 0.1.0-35, wine-sg 0181-0182, 10.0-47); font viewer and the
+   Fonts folder (sg-shell 0.1.0-37, wine-sg 0183, 10.0-49). Left: WordPad
+   tables and OLE objects, .doc; Magnifier lens resizing and GL/Vulkan
+   windows in lens/full screen; OSK non-US labels; hiding fonts by
+   language.
 
 ### Voice typing
-- Text appears per utterance, not while speaking; spoken punctuation and
-  filler words are English only; not yet tested with a real microphone in a
-  VM.
+- Done 2026-09-25 (sg-session 0.1.0-27, sg-shell 0.1.0-36): partial text
+  in the bar while speaking, final text typed at the pause; spoken
+  punctuation, filler words and commands (delete/undo that, stop listening)
+  in English, German, French and Spanish, or detected per utterance; the
+  model as a package (sg-session 0.1.0-21). Left: a live microphone test in
+  a VM.
 
 ### Platform
 - Domain: real domain SID in Wine; machine GPOs from the domain.

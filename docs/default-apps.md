@@ -15,7 +15,7 @@ list in `build_list()` (`sg-shell/src/sg-start.c`) and its settings entries.
 | Program | Windows name it stands in for | Works? / quality | Start |
 |---|---|---|---|
 | `notepad.exe` | Notepad | Works; Wine's plain editor. **Being rebuilt** (Kate-class) by another worker. | yes |
-| `wordpad.exe`, `write.exe` | WordPad | Works (RichEdit, toolbars, ruler); dated Win2000 look, title "Wine Wordpad". | no |
+| `wordpad.exe`, `write.exe` | WordPad | Hands off to sg-wordpad via App Paths (wine-sg 0180, 10.0-51); Wine's own runs without it. | -- |
 | `regedit.exe` | Registry Editor | Works; classic look, close to Windows'. | no |
 | `taskmgr.exe` | Task Manager | Works; NT4-era (Applications/Processes/Performance). Hands off to sg-taskmgr when App Paths names it (wine-sg 0121). | yes (as "Task Manager") |
 | `cmd.exe` (in `wineconsole`/conhost) | Command Prompt | Works. | yes |
@@ -104,9 +104,9 @@ re-imported (sg-session: `sg-prefix-init` does not re-run defaults on an initial
 | Sticky Notes | **Done** (sg-sticky) |
 | Character Map | **Done** (sg-charmap) |
 | Settings | Control Panel (sg-control) stands in; no separate Settings app. |
-| Terminal | Command Prompt in conhost, PowerShell 7; no tabbed Windows Terminal. |
+| Terminal | **Done** (sg-terminal, wt.exe) -- tabs, profiles, split panes, search. |
 | Clock / Alarms & Clock | Wine's `clock.exe` face only; no alarms, timers, stopwatch, world clock. |
-| Magnifier, On-Screen Keyboard | None. |
+| Magnifier, On-Screen Keyboard | **Done** (sg-magnify, sg-osk; magnify.exe/osk.exe, Win+Plus/Win+Esc, Win+Ctrl+O; wine-sg 0181-0182). |
 | Disk Management, Disk Cleanup | None (Linux disks under Wine have no Windows volume layer to manage). |
 | Event Viewer | None (`wevtutil` stub only). |
 | Device Manager | None. |
@@ -115,10 +115,10 @@ re-imported (sg-session: `sg-prefix-init` does not re-run defaults on an initial
 | System Information | Wine's msinfo32 is an About box. |
 | Resource Monitor | None (Task Manager's Performance tab). |
 | Remote Desktop Connection | **Done earlier** (sg-mstsc). |
-| WordPad | Wine's wordpad works; dated look, "Wine Wordpad" title. |
+| WordPad | **Done** (sg-wordpad) -- ribbon, ruler, RTF/.docx/.odt/text, pictures, printing and preview (RichEdit EM_FORMATRANGE, wine-sg 0184). |
 | PDF viewing | None out of the box (Edge is user-supplied; iexplore/Gecko cannot show PDFs). |
 | Web browser | Only Wine's Internet Explorer on Gecko 2.47 -- not usable for today's web. Users install Edge/Firefox. |
-| Fonts viewer | None (no fontview.exe, no Fonts folder view). |
+| Fonts viewer | **Done** (sg-fontview: fontview.exe, the Fonts folder, per-user and all-users install; wine-sg 0183). |
 | Help (Get Help, .chm) | hh.exe reads .chm; no Tips/Get Help app. |
 | Notepad, File Explorer | Owned by other workers. |
 
@@ -129,13 +129,13 @@ re-imported (sg-session: `sg-prefix-init` does not re-run defaults on an initial
    free renderer -- clean-room rule applies).
 2. **Settings app** (Windows 10/11 Settings layout over the Control Panel's
    pages) -- Win+I goes to the Control Panel today.
-3. **Windows Terminal** (tabs, profiles for cmd/PowerShell).
+3. ~~Windows Terminal~~ -- done (sg-terminal).
 4. **Alarms & Clock** (alarms, timer, stopwatch, world clock).
-5. **WordPad refresh** (theme and title) -- or a new one alongside Notepad's rebuild.
+5. ~~WordPad refresh~~ -- done (sg-wordpad).
 6. **Event Viewer / Services / Device Manager / Computer Management** --
    admin tools; need an MMC-style host and data sources (journald, SCM, udev).
-7. **Magnifier and On-Screen Keyboard** (accessibility).
+7. ~~Magnifier and On-Screen Keyboard~~ -- done.
 8. **System Information** (a real msinfo32).
-9. **Font viewer** and a Fonts folder.
+9. ~~Font viewer and a Fonts folder~~ -- done.
 10. **Disk Cleanup / Disk Management** (map to Linux storage via a broker).
 11. **Resource Monitor**.
