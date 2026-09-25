@@ -75,10 +75,10 @@ the app inventory is `default-apps.md`.
   VM.
 
 ### Platform
-- Secure Boot: the boot chain is unsigned (no shim yet).
 - Domain: real domain SID in Wine; machine GPOs from the domain.
 - MSIX deployment (Store apps) in progress in wine-sg.
 - winex11 BadWindow under Xvfb; desktop surface flush clipping.
-- The ISO is UEFI-only (no legacy BIOS boot).
+- Out of scope (David, 2026-09-25): a signed boot chain (Secure Boot) and
+  legacy BIOS boot. UEFI, unsigned, is the target.
 - The apt site cannot carry files over 100 MB (GitHub), so the speech model
   ships only in the image/ISO.
