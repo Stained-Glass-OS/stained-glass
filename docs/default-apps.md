@@ -38,7 +38,7 @@ list in `build_list()` (`sg-shell/src/sg-start.c`) and its settings entries.
 | `winver.exe` | About Windows | "About Wine 10.0" box. | no |
 | `uninstaller.exe` | Add/Remove Programs | Same as appwiz.cpl. | no |
 | `wmplayer.exe` | Windows Media Player | Stub (prints a FIXME, no window). Hands off to sg-media via App Paths (wine-sg 0121). | -- |
-| `explorer.exe <dir>` | File Explorer | Works; Wine's basic browser. **Being overhauled** by another worker. | yes |
+| `explorer.exe <dir>` | File Explorer | Ours (wine-sg 0110-0112, 0150-0157): Windows 10's layout, thumbnails, views, groups, Quick access, panes, Send to. | yes |
 | `view.exe` | (metafile viewer) | No window without a file. | no |
 | Console tools: `ipconfig`, `netsh`, `ping`, `tasklist`, `taskkill`, `sc`, `reg`, `xcopy`, `robocopy`, `where`, `whoami`, `systeminfo`, `schtasks`, `certutil`, `wmic`, `msiexec`, `cscript`/`wscript`, `mshta`, ... | same | Work in cmd. | -- |
 
@@ -102,7 +102,7 @@ re-imported (sg-session: `sg-prefix-init` does not re-run defaults on an initial
 | Photos | **Done** (sg-photos) -- viewer only (no albums/editing) |
 | Media Player | **Done** (sg-media) -- needs the image's GStreamer packages |
 | Task Manager | **Done** (sg-taskmgr) |
-| Zip folders | **Done** (sg-zip) -- no "Send to" item yet (per-user SendTo, sg-session) |
+| Zip folders | **Done** (sg-zip), with Send to > Compressed (zipped) Folder (sg-session 0.1.0-28, wine-sg 0156) |
 | Sticky Notes | **Done** (sg-sticky) |
 | Character Map | **Done** (sg-charmap) |
 | Settings | Control Panel (sg-control) stands in; no separate Settings app. |

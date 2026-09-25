@@ -36,11 +36,12 @@ the app inventory is `default-apps.md`.
 - `SystemTimeToTzSpecificLocalTimeEx` is a stub.
 
 ### File Explorer
-- Image thumbnails and bigger icon sizes; Tiles and grouped views (Wine's
-  listview lacks them); Quick access pinning/recent files; details pane;
-  drop onto the navigation pane; friendly type names ("Text Document");
-  selected icons tint purple.
-- "Send to > Compressed (zipped) folder" (per-user SendTo item, sg-session).
+- Round 2 landed (wine-sg 0150-0157, sg-session 0.1.0-28, sg-shell
+  0.1.0-41): thumbnails, icon sizes, Tiles/Content, Group by (comctl32 list
+  view groups and tiles), Quick access, details/preview panes, drops on the
+  navigation pane, type names, Send to. Left: video/PDF thumbnails, a disk
+  thumbnail cache, image dimensions in the details pane, removing frequent
+  folders from Quick access, reordering pins.
 
 ### Notepad
 - Done 2026-09-25 (wine-sg 10.0-51): the menu bar follows the dark theme
