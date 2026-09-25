@@ -28,12 +28,16 @@ the app inventory is `default-apps.md`.
 ## Open, by area
 
 ### App compatibility
-- **Firefox never finishes shutting down** -- an upstream Wine bug (stock
-  Debian Wine hangs the same way): a synchronous IPC to the GPU process is
-  never woken. Next: a small overlapped-pipe + IOCP + cross-thread
-  PostMessage probe (wine-sg CLAUDE.md, "Firefox").
-- Emoji and other characters beyond the BMP draw as boxes (Wine GDI).
-- `SystemTimeToTzSpecificLocalTimeEx` is a stub.
+- Firefox shutdown, emoji in GDI text and the dynamic time zone APIs are
+  done (wine-sg 0170-0173, 10.0-57); the compat suite has 24 applications,
+  all launching.
+- Paint.NET 5 stops at Direct2D's built-in effects (`ID2D1Factory7::
+  GetEffectProperties`), after DispatcherQueue / 22H2 / DXGI (0174-0176).
+- GTK 4 programs (Pinta) draw text misshapen (glyph parts missing).
+- Colour emoji: GDI draws them in one colour (as on Windows); DirectWrite
+  colour glyphs not checked. No CJK Extension B font in the image.
+- Setting the time zone from Windows programs (`SetDynamicTimeZoneInformation`
+  through sg-admind) is not wired.
 
 ### File Explorer
 - Round 2 landed (wine-sg 0150-0157, sg-session 0.1.0-28, sg-shell
