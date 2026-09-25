@@ -51,7 +51,11 @@ the app inventory is `default-apps.md`.
   only.
 
 ### Settings / shell
-- The taskbar ignores Settings' Taskbar/Start options.
+- Taskbar and Start honour Settings: done (wine-sg 10.0-54 0164, sg-shell
+  0.1.0-42) -- edge, auto-hide, small buttons, combining, centring, search,
+  Task View; Start's most used, suggestions, app list, more tiles, full
+  screen, placement by the taskbar's edge. Not yet: dragging/resizing the
+  bar, jump lists, badges, peek, per-monitor bars.
 - Lock screen picture: done (sg-session 0.1.0-23, sg-shell 0.1.0-34) --
   the chosen picture with the clock, lifted to a blurred sign-in pane. Not
   yet: the curtain coming back after a minute idle, Spotlight, and
@@ -63,7 +67,14 @@ the app inventory is `default-apps.md`.
 - Terminal: split panes and search done (sg-shell 0.1.0-32). Left: a
   settings.json of its own, user profiles, tabs in the title bar, bracketed
   paste, mouse reporting, dragging the divider with the mouse.
-- Dark mode (system-wide), OOBE (first-run setup).
+- Dark mode: done (wine-sg 10.0-54 0160-0163, sg-shell 0.1.0-42/-43) --
+  a generated Dark scheme of our msstyles switched live for every program,
+  dark title bars (DWMWA_USE_IMMERSIVE_DARK_MODE), the taskbar/Start/flyout
+  by the Windows mode, Settings and ten of our apps by the app mode. Not
+  yet: Terminal/WordPad/Magnifier/OSK/voice bar palettes; programs that
+  hard-code black text on COLOR_WINDOW backgrounds stay unreadable in dark
+  (as on Windows with system colours forced).
+- OOBE (first-run setup): see sg-session.
 
 ### Admin tools
 - Done 2026-09-25 (wine-sg 10.0-45, sg-session 0.1.0-26, sg-shell 0.1.0-39):
