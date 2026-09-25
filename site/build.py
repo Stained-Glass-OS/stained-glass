@@ -74,10 +74,19 @@ pre { max-width: 100%; }
 }
 """
 
-LOGO = ('<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">'
-        '<path d="M11 1 21 11 11 21 1 11Z" fill="#7a2fc0"/>'
-        '<path d="M11 1 21 11 11 11Z" fill="#c0392b"/><path d="M1 11 11 11 11 21Z" fill="#0f8a86"/>'
-        '<path d="M11 11 21 11 11 21Z" fill="#d39b22"/></svg>')
+# The Start button's mark (sg-shell src/sg-taskbar.c draw_start_glyph): four
+# diamond tiles -- squares on their points, half-diagonal 6 -- centred 8 px
+# from the middle at the compass points: purple top, magenta right, amber
+# bottom, turquoise left.
+def _tile(cx, cy, fill, h=6):
+    return (f'<path d="M{cx} {cy - h} {cx + h} {cy} {cx} {cy + h} {cx - h} {cy}Z" '
+            f'fill="{fill}"/>')
+
+
+MARK = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">'
+        + _tile(14, 6, "#7B2FBE") + _tile(22, 14, "#C42E8E")
+        + _tile(14, 22, "#E8A200") + _tile(6, 14, "#12B5B0") + '</svg>')
+LOGO = MARK.replace('<svg ', '<svg width="24" height="24" aria-hidden="true" ', 1)
 
 
 def page(title, body, depth=0):
@@ -87,6 +96,7 @@ def page(title, body, depth=0):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <link rel="stylesheet" href="{up}style.css">
+<link rel="icon" type="image/svg+xml" href="{up}logo.svg">
 </head><body>
 <header class="top"><div class="wrap">
 <a class="brand" href="{up}index.html">{LOGO}Stained Glass OS</a>
@@ -123,6 +133,8 @@ def main():
     os.makedirs(os.path.join(OUT, "docs", "decisions"))
     with open(os.path.join(OUT, "style.css"), "w") as f:
         f.write(CSS)
+    with open(os.path.join(OUT, "logo.svg"), "w") as f:
+        f.write(MARK)
     shutil.copytree(os.path.join(HERE, "img"), os.path.join(OUT, "img"))
     if os.path.isdir(os.path.join(REPO, "docs", "images")):
         shutil.copytree(os.path.join(REPO, "docs", "images"), os.path.join(OUT, "docs", "images"))
