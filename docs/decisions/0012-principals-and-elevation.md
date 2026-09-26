@@ -216,9 +216,53 @@ sg-session `make test-consent` runs the broker and prompt end to end with PAM
 under pam_wrapper. It fails against a broker that skips the administrator
 check, and against one that skips SECURE.
 
-**Also still open** (as ADR 0012 already noted): elevated programs share the
-session's display, so input isolation for the elevated window (Windows' UIPI)
-is not yet complete; and per-administrator elevated accounts wait for SID/group
+**Elevated programs get a display of their own (landed 2026-09-26, bug B56).**
+The interim "share the session's display" never worked and was never shipped:
+as SYSTEM the elevated program could not even connect to the user's Xwayland
+("Authorization required"), and had it, any program in the session could have
+typed into it or read it. So each elevated program now runs against its own X
+server, exactly as the Consequences below require:
+
+- sg-session's **`sg-elevated-run`** (exec'd by the broker after consent, as
+  SYSTEM) starts one `Xwayland` as SYSTEM, admitting only a cookie only SYSTEM
+  can read, and hands it to the requester's own compositor with **`ELEVATED`**
+  on the control socket (accepted from the SYSTEM account or root by
+  SO_PEERCRED). sg-compositor becomes that X server's window manager and
+  composites its windows into the user's desktop as ordinary windows -- moved,
+  resized, minimised, maximised, focused, with a taskbar button (wine-sg 0290)
+  and Alt+Tab, all driven by the user's real keyboard and pointer through the
+  compositor. The program's Wine runs on a desktop of its own
+  (`SG_WINSTATION=WinSta0\sg-elevated-<display>`); its wineserver/prefix model
+  (SYSTEM identity) is unchanged. The display lives while the program and its
+  children do, then goes.
+- **Two channels are closed, not one.** The kernel already separated the
+  processes (different Unix accounts). The *display* is closed by the separate
+  X server: no session program can connect to it (cookie), inject input
+  (XTEST/XSendEvent do not cross X servers) or capture it (XGetImage). The
+  *wineserver* was a third way in -- both run in one machine wineserver -- so
+  **wine-sg 0291 adds UIPI in the server**: a process below high integrity may
+  send a high-integrity (elevated/SYSTEM) process only the messages Windows'
+  UIPI allows, and may not AttachThreadInput to it or hook its threads.
+- **Clipboard and drag and drop follow UIPI's spirit.** Text an elevated
+  program copies is offered to the session (elevated -> user is allowed, as on
+  Windows). The session's clipboard text is offered to an elevated program
+  *only* when the user presses a key or clicks in one of its windows -- input
+  only the compositor can make -- so nothing the session does on its own pushes
+  data in, and what arrives is what the user was about to paste; text only (no
+  files, no images, no formats with parsers of their own). There is **no drag
+  and drop** in either direction: Windows' UIPI refuses a drop from lower
+  integrity, and elevated X servers are offered no data-device protocol.
+
+Gates: sg-compositor `make test-elevated` (the real `sg-elevated-run` as
+sgsystem against the real compositor; a session adversary's XTEST, XSendEvent
+and XGetImage reach nothing of the elevated window; mutant-proven, including a
+build that puts the elevated program on the session display), sg-session `make
+test-consent` (the prompt's and lock screen's X servers now admit only their
+own account), and sg-image `make elevated-test` (a real NSIS installer through
+consent in the booted VM: window appears, real keyboard installs to Program
+Files with a Start menu shortcut for the user; "Add someone else to this PC").
+
+**Still open:** per-administrator elevated accounts wait for SID/group
 mapping (P2).
 
 ## Consequences
