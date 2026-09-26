@@ -43,9 +43,12 @@ the app inventory is `default-apps.md`.
 - Round 2 landed (wine-sg 0150-0157, sg-session 0.1.0-28, sg-shell
   0.1.0-41): thumbnails, icon sizes, Tiles/Content, Group by (comctl32 list
   view groups and tiles), Quick access, details/preview panes, drops on the
-  navigation pane, type names, Send to. Left: video/PDF thumbnails, a disk
-  thumbnail cache, image dimensions in the details pane, removing frequent
-  folders from Quick access, reordering pins.
+  navigation pane, type names, Send to. Round 3 (wine-sg 0244-0246,
+  10.0-59; sg-session 0.1.0-30): video and PDF thumbnails, an on-disk
+  thumbnail cache, picture dimensions and video length in the details pane,
+  "Remove from Quick access", pins reordered by dragging. Left: editable
+  properties, reordering pins on the Quick access page itself, a film-strip
+  overlay, Office/audio-art thumbnails.
 
 ### Notepad
 - Done 2026-09-25 (wine-sg 10.0-51): the menu bar follows the dark theme
