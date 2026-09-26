@@ -216,8 +216,8 @@ sg-session `make test-consent` runs the broker and prompt end to end with PAM
 under pam_wrapper. It fails against a broker that skips the administrator
 check, and against one that skips SECURE.
 
-**Elevated programs get a display of their own (built 2026-09-26, bug B56; not yet shipped).**
-**Status (2026-09-26): on branches `b56-elevated-display` (sg-compositor, sg-session, wine-sg, sg-image, stained-glass), NOT pushed. Headless gates pass (sg-compositor `make test-elevated` + mutants, sg-session `make test`/`test-consent`); a local NSIS-installer smoke test on an elevated display passes; wine-sg 10.0-71 (0290/0291) builds. Next: run sg-image `make elevated-test` (image already built at /var/tmp/b56/sg-image/build with wine 10.0-69), then take the next free versions and push.**
+**Elevated programs get a display of their own (built 2026-09-26, bug B56; shipped in sg-compositor 0.2.0+sg6, sg-session 0.1.0-40, wine-sg 10.0-79).**
+**Status (2026-09-26): shipped. The VM gate sg-image `make elevated-test` passes 13/13: the installer shows on its own display and gets the real keyboard, a session program cannot connect to that display, it installs to Program Files with a Start menu shortcut and an Apps & features entry, and Add someone else to this PC creates the account. Also fixed on the way: sg-brokerd's fixed PATH lacked /opt/wine-sg/bin (the elevated program exited 127).**
 
 The interim "share the session's display" never worked and was never shipped:
 as SYSTEM the elevated program could not even connect to the user's Xwayland
