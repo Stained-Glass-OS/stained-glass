@@ -105,10 +105,11 @@ the app inventory is `default-apps.md`.
    Fonts folder (sg-shell 0.1.0-37, wine-sg 0183, 10.0-49). WordPad tables
    (RTF/.docx/.odt, Insert > Table; wine-sg 0240, 10.0-60), page numbers,
    header and footer in print, and reading Word 97-2003 .doc with our own
-   reader (sg-shell 0.1.0-47). Left: WordPad OLE objects, writing .doc,
-   merged/nested tables; Magnifier lens resizing and GL/Vulkan
-   windows in lens/full screen; OSK non-US labels; hiding fonts by
-   language.
+   reader (sg-shell 0.1.0-47). On-Screen Keyboard labels follow the keyboard
+   layout (sg-shell 0.1.0-46, wine-sg 0250-0251, 10.0-58). Left: WordPad
+   OLE objects, writing .doc, merged/nested tables; Magnifier lens resizing
+   and GL/Vulkan windows in lens/full screen; OSK dead keys composing and a
+   Windows-side layout switch; hiding fonts by language.
 
 ### Voice typing
 - Done 2026-09-25 (sg-session 0.1.0-27, sg-shell 0.1.0-36): partial text
