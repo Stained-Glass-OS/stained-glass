@@ -80,6 +80,7 @@ compatibility comes from re-implementing the documented Windows APIs ourselves.
 <div class="grid" markdown="1">
 ![File Explorer](img/explorer.png){: .shot}
 ![Notepad](img/notepad.png){: .shot}
+![Stained Glass Settings](img/settings.png){: .shot}
 </div>
 
 ## Download {#download}

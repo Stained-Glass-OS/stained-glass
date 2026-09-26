@@ -37,6 +37,7 @@ attach it to a VM's CD drive with **UEFI firmware on** (4 GB RAM, 24 GB disk), b
 </p>
 <p>
 <img src="docs/images/notepad.png" alt="Notepad as a code editor" width="49%">
+<img src="docs/images/settings.png" alt="Stained Glass Settings" width="49%">
 </p>
 
 ## What's in it
