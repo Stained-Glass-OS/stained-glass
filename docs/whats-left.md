@@ -57,6 +57,19 @@ the app inventory is `default-apps.md`.
   Signal, Thunderbird mail flows and browser daily use (video, downloads,
   printing, pickers, notifications) are mid-investigation; see wine-sg
   CLAUDE.md for what each agent found and where the drafts are.
+- Creative/media round (wine-sg 0340-0342, 10.0-77): Direct2D layers,
+  blend/composite modes and effect-graph fixes -- Paint.NET 5's canvas,
+  colour wheel and swatches now draw; a paintbrush drag still hangs it
+  (command-list bounds are unbounded; WIP noted in wine-sg CLAUDE.md).
+  Survey on the dev build: Blender 4.2, Audacity, foobar2000 work; GIMP
+  2.10/3.0, Krita, Inkscape, OBS, VLC, HandBrake partly. Causes found, not
+  yet fixed: `C:\windows\Fonts` is empty (Krita crash, Inkscape text, VLC
+  subtitles); the host's `XDG_DATA_DIRS` leaks into programs (GIMP 3
+  aborts); no `kbdus.dll`/keyboard-layout keys (GTK Ctrl shortcuts); OBS
+  needs `icuuc.dll` and `D3DKMTSetProcessSchedulingPriorityClass`; VLC's
+  DXVA2/D3D11VA decoding and NV12 output; WPF text shaping FailFast
+  (HandBrake GUI). Not yet tried: Shotcut, Kdenlive, IrfanView, XnView MP,
+  darktable, RawTherapee, MusicBee, Resolve, Affinity, Clip Studio.
 - GTK 4 programs (Pinta) draw text misshapen (glyph parts missing).
 - Colour emoji: GDI draws them in one colour (as on Windows); DirectWrite
   colour glyphs not checked. No CJK Extension B font in the image.
