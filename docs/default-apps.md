@@ -74,6 +74,29 @@ list in `build_list()` (`sg-shell/src/sg-start.c`) and its settings entries.
 | Wine Mono 9.4 / Wine Gecko 2.47 | .NET Framework programs; mshtml for iexplore/hh/mshta. | -- |
 | Install Stained Glass OS (live boot only) | sg-setup. | yes (`.lnk`) |
 
+## Applications users install first (wine-sg compat suite, 2026-09-25)
+
+Installed by the user from the maker's site -- never shipped by us. Run by
+wine-sg's `test/compat/run.sh` (install, launch, main window, close) against
+10.0-66 + 0235-0239; details and triage in wine-sg's CLAUDE.md.
+
+| Application | Works? |
+|---|---|
+| Google Chrome (enterprise MSI) | Yes -- needed wine-sg 0235-0237 (its updater's COM service). |
+| Microsoft Edge (enterprise MSI) | Yes. |
+| Slack | Yes (sign-in window). |
+| Node.js 22 | Yes -- needed 0238 (the MSI's website shortcut). |
+| Java 21 (Eclipse Temurin) | Yes; 0239 removed a start-up warning. |
+| Games via DXVK: Baldi's Basics, Fears to Fathom (Unity, Direct3D 11) | Yes, rendered through DXVK. Doki Doki Literature Club (Ren'Py, OpenGL) too. |
+| Discord | Installs; its updater loops on "Update failed". |
+| Spotify | Installs; crashes at start. |
+| Zoom | Installs; crashes at start. |
+| Microsoft Teams (new, MSIX) | Adds; exits at start (a missing WinRT class, then WebView2). |
+| Adobe Acrobat Reader | Installer exits with an error. |
+| Microsoft 365 (online installer) | Click-to-Run never finishes. |
+| Visual Studio Build Tools | Bootstrapper crashes. |
+| Steam games | Steam needs a signed-in account; not tested headless. |
+
 ## How the Windows names reach our programs
 
 `CreateProcess("calc.exe")` searches system32 and PATH, **never App Paths**.

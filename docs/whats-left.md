@@ -29,8 +29,15 @@ the app inventory is `default-apps.md`.
 
 ### App compatibility
 - Firefox shutdown, emoji in GDI text and the dynamic time zone APIs are
-  done (wine-sg 0170-0173, 10.0-57); the compat suite has 24 applications,
-  all launching.
+  done (wine-sg 0170-0173, 10.0-57); the compat suite's first 24
+  applications all launch.
+- Round 2 (wine-sg 0235-0239): Chrome, Edge, Slack, Node.js, Java and two
+  DXVK games work (Chrome needed a COM service fix, typelib [string]
+  marshalling and key DACLs; Node.js an internet-shortcut fix). Open:
+  Discord (updater loops), Spotify and Zoom (crash at start), Teams
+  (`LimitedAccessFeatures`, then WebView2), Acrobat Reader (installer exits
+  67), Microsoft 365 (Click-to-Run hangs), VS Build Tools (bootstrapper
+  crashes). See default-apps.md.
 - Paint.NET 5 stops at Direct2D's built-in effects (`ID2D1Factory7::
   GetEffectProperties`), after DispatcherQueue / 22H2 / DXGI (0174-0176).
 - GTK 4 programs (Pinta) draw text misshapen (glyph parts missing).
