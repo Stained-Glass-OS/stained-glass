@@ -38,8 +38,12 @@ the app inventory is `default-apps.md`.
   (`LimitedAccessFeatures`, then WebView2), Acrobat Reader (installer exits
   67), Microsoft 365 (Click-to-Run hangs), VS Build Tools (bootstrapper
   crashes). See default-apps.md.
-- Paint.NET 5 stops at Direct2D's built-in effects (`ID2D1Factory7::
-  GetEffectProperties`), after DispatcherQueue / 22H2 / DXGI (0174-0176).
+- Paint.NET 5 starts (wine-sg 0223-0234: Direct2D effects and command
+  lists drawn, a first Windows.UI.Composition -- compositor, visuals,
+  brushes, drawing surfaces, desktop window targets). Its main window, tool
+  and history/layers panels and canvas come up, but it is not usable yet:
+  the canvas shows the transparency checkerboard instead of the image, the
+  colour swatches and wheel are not drawn, Direct2D layers are a stub.
 - GTK 4 programs (Pinta) draw text misshapen (glyph parts missing).
 - Colour emoji: GDI draws them in one colour (as on Windows); DirectWrite
   colour glyphs not checked. No CJK Extension B font in the image.
