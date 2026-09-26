@@ -42,8 +42,12 @@ the app inventory is `default-apps.md`.
   mutex/condition-variable layout for programs built with Visual Studio
   2022 17.10+ (0428, from the games round; upstream Wine's fix backported).
 - Direct2D geometries answer area/length/containment/outline, arcs are arcs,
-  and command lists have real bounds (0427). Paint.NET 5 still hangs
-  (busy, ~half a core) at the first paintbrush drag: not the bounds alone.
+  and command lists have real bounds (0427). Paint.NET 5's paintbrush draws
+  (0429: a Clear no longer makes a stamp's command list unbounded; alpha-only
+  WIC render targets for brush masks, drawn over what they held; effect
+  drawing serialised on multi-threaded factories). Open: a fast stroke over
+  earlier ones, rendered on several threads, can leave a stray piece (exact
+  on one CPU -- a race not yet found); saving untested.
 - The ISO boots from a Ventoy stick as well as dd/DVD; the live boot no
   longer hangs on the splash; the server keeps only the newest ISO.
 
