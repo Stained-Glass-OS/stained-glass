@@ -38,7 +38,9 @@ the app inventory is `default-apps.md`.
 - Communication round landed: Zoom's and Teams' start-up failures
   (0425-0426), Thunderbird's GetCurrentApplicationUserModelId (0423),
   downloads no longer leave `file:Zone.Identifier` files (0422), ucrtbase
-  intmax functions (0421), IDXGIKeyedMutex on WineD3D (0424).
+  intmax functions (0421), IDXGIKeyedMutex on WineD3D (0424); msvcp140's
+  mutex/condition-variable layout for programs built with Visual Studio
+  2022 17.10+ (0428, from the games round; upstream Wine's fix backported).
 - Direct2D geometries answer area/length/containment/outline, arcs are arcs,
   and command lists have real bounds (0427). Paint.NET 5 still hangs
   (busy, ~half a core) at the first paintbrush drag: not the bounds alone.
