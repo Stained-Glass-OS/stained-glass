@@ -21,6 +21,11 @@ installs (beside Windows, too); what works and what is left is tracked in
 
 ## Try it
 
+> **Stained Glass OS is not Microsoft Windows.** It is an independent open-source operating system
+> designed to be compatible with Windows programs. It is not a Microsoft product and is not
+> affiliated with, endorsed by, or sponsored by Microsoft Corporation. Windows is a trademark of
+> Microsoft Corporation.
+
 Download **[sg-live-latest.iso](https://freesoft.page/iso/sg-live-latest.iso)** (about 2 GB,
 64-bit UEFI PCs; checksums in [/iso/](https://freesoft.page/iso/)). Write it to a USB stick or
 attach it to a VM's CD drive with **UEFI firmware on** (4 GB RAM, 24 GB disk), boot
@@ -28,10 +33,9 @@ attach it to a VM's CD drive with **UEFI firmware on** (4 GB RAM, 24 GB disk), b
 
 <p>
 <img src="docs/images/explorer.png" alt="File Explorer" width="49%">
-<img src="docs/images/settings.png" alt="Settings" width="49%">
+<img src="docs/images/setup.png" alt="Setup: choosing where to install" width="49%">
 </p>
 <p>
-<img src="docs/images/setup.png" alt="Setup: choosing where to install" width="49%">
 <img src="docs/images/notepad.png" alt="Notepad as a code editor" width="49%">
 </p>
 

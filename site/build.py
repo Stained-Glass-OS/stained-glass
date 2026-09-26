@@ -64,6 +64,7 @@ th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; ver
 blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 2px 16px; color: var(--muted); }
 footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; padding: 18px 0 40px; }
 .doclist li { margin: 4px 0; }
+.notice { border: 1px solid var(--accent); border-left-width: 4px; border-radius: 6px; padding: 4px 16px; margin: 12px 0 20px; background: var(--card); }
 main, .wrap { min-width: 0; }
 pre { max-width: 100%; }
 @media (max-width: 600px) {

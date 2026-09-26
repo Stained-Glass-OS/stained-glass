@@ -80,10 +80,18 @@ compatibility comes from re-implementing the documented Windows APIs ourselves.
 <div class="grid" markdown="1">
 ![File Explorer](img/explorer.png){: .shot}
 ![Notepad](img/notepad.png){: .shot}
-![Settings](img/settings.png){: .shot}
 </div>
 
 ## Download {#download}
+
+<div class="notice" markdown="1">
+
+**Stained Glass OS is not Microsoft Windows.** It is an independent, free and open-source
+operating system that is designed to be *compatible with* Windows programs. It is not a Microsoft
+product, contains no Microsoft code, and is not affiliated with, endorsed by, or sponsored by
+Microsoft Corporation in any way. Windows is a trademark of Microsoft Corporation.
+
+</div>
 
 **[sg-live-latest.iso](iso/sg-live-latest.iso)** &mdash; about 2 GB, for 64-bit PCs with UEFI
 firmware. Older builds and SHA-256 checksums are in [/iso/](iso/).
