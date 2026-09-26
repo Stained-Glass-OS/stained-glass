@@ -78,7 +78,7 @@ the app inventory is `default-apps.md`.
   yet: Terminal/WordPad/Magnifier/OSK/voice bar palettes; programs that
   hard-code black text on COLOR_WINDOW backgrounds stay unreadable in dark
   (as on Windows with system colours forced).
-- OOBE (first-run setup): see sg-session.
+- OOBE (first-run setup) landed (sg-session 0.1.0-24..29). Open: the region only sets the format and country (the display language is English only); locales are not generated on the Linux side; installing a browser is Firefox or Firefox ESR, from Mozilla or through a user-installed winget; no Wi-Fi in the VM gate.
 
 ### Admin tools
 - Done 2026-09-25 (wine-sg 10.0-45, sg-session 0.1.0-26, sg-shell 0.1.0-39):
