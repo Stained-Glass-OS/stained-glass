@@ -40,8 +40,8 @@ the app inventory is `default-apps.md`.
   downloads no longer leave `file:Zone.Identifier` files (0422), ucrtbase
   intmax functions (0421), IDXGIKeyedMutex on WineD3D (0424).
 - Direct2D geometries answer area/length/containment/outline, arcs are arcs,
-  and command lists have real bounds (0427) -- the cause of Paint.NET's
-  paintbrush hang; to be re-checked in Paint.NET itself.
+  and command lists have real bounds (0427). Paint.NET 5 still hangs
+  (busy, ~half a core) at the first paintbrush drag: not the bounds alone.
 - The ISO boots from a Ventoy stick as well as dd/DVD; the live boot no
   longer hangs on the splash; the server keeps only the newest ISO.
 
