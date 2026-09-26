@@ -68,9 +68,10 @@ the app inventory is `default-apps.md`.
   0.2.0+sg5, sg-session 0.1.0-22, sg-shell 0.1.0-31). Windows programs
   cannot yet keep the screen on (`SetThreadExecutionState` does not reach
   the compositor); not yet tested on real hardware/VM suspend.
-- Terminal: split panes and search done (sg-shell 0.1.0-32). Left: a
-  settings.json of its own, user profiles, tabs in the title bar, bracketed
-  paste, mouse reporting, dragging the divider with the mouse.
+- Terminal: split panes and search done (sg-shell 0.1.0-32); settings.json
+  as Windows Terminal keeps it, user profiles and dragging pane dividers
+  (sg-shell 0.1.0-45). Left: tabs in the title bar, bracketed paste, mouse
+  reporting.
 - Dark mode: done (wine-sg 10.0-54 0160-0163, sg-shell 0.1.0-42/-43) --
   a generated Dark scheme of our msstyles switched live for every program,
   dark title bars (DWMWA_USE_IMMERSIVE_DARK_MODE), the taskbar/Start/flyout
@@ -101,8 +102,11 @@ the app inventory is `default-apps.md`.
    ribbon, ruler, RTF/.docx/.odt/text, pictures, printing and preview
    through RichEdit's new EM_FORMATRANGE); Magnifier and On-Screen Keyboard
    (sg-shell 0.1.0-35, wine-sg 0181-0182, 10.0-47); font viewer and the
-   Fonts folder (sg-shell 0.1.0-37, wine-sg 0183, 10.0-49). Left: WordPad
-   tables and OLE objects, .doc; Magnifier lens resizing and GL/Vulkan
+   Fonts folder (sg-shell 0.1.0-37, wine-sg 0183, 10.0-49). WordPad tables
+   (RTF/.docx/.odt, Insert > Table; wine-sg 0240, 10.0-60), page numbers,
+   header and footer in print, and reading Word 97-2003 .doc with our own
+   reader (sg-shell 0.1.0-47). Left: WordPad OLE objects, writing .doc,
+   merged/nested tables; Magnifier lens resizing and GL/Vulkan
    windows in lens/full screen; OSK non-US labels; hiding fonts by
    language.
 

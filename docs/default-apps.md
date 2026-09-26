@@ -106,7 +106,7 @@ re-imported (sg-session: `sg-prefix-init` does not re-run defaults on an initial
 | Sticky Notes | **Done** (sg-sticky) |
 | Character Map | **Done** (sg-charmap) |
 | Settings | Control Panel (sg-control) stands in; no separate Settings app. |
-| Terminal | **Done** (sg-terminal, wt.exe) -- tabs, profiles, split panes, search. |
+| Terminal | **Done** (sg-terminal, wt.exe) -- tabs, profiles, split panes (mouse-dragged dividers), search, Windows Terminal's settings.json with user profiles. |
 | Clock / Alarms & Clock | Wine's `clock.exe` face only; no alarms, timers, stopwatch, world clock. |
 | Magnifier, On-Screen Keyboard | **Done** (sg-magnify, sg-osk; magnify.exe/osk.exe, Win+Plus/Win+Esc, Win+Ctrl+O; wine-sg 0181-0182). |
 | Disk Management, Disk Cleanup | None (Linux disks under Wine have no Windows volume layer to manage). |
@@ -117,7 +117,7 @@ re-imported (sg-session: `sg-prefix-init` does not re-run defaults on an initial
 | System Information | Wine's msinfo32 is an About box. |
 | Resource Monitor | None (Task Manager's Performance tab). |
 | Remote Desktop Connection | **Done earlier** (sg-mstsc). |
-| WordPad | **Done** (sg-wordpad) -- ribbon, ruler, RTF/.docx/.odt/text, pictures, printing and preview (RichEdit EM_FORMATRANGE, wine-sg 0184). |
+| WordPad | **Done** (sg-wordpad) -- ribbon, ruler, RTF/.docx/.odt/text, pictures, tables (wine-sg 0240), printing and preview with page numbers and header/footer (RichEdit EM_FORMATRANGE, wine-sg 0184); opens Word 97-2003 .doc (its own reader; .doc is associated with it, as on Windows without Office). |
 | PDF viewing | **Done** (sg-pdf, on poppler). |
 | Web browser | **Get a web browser** (sg-browser) installs the user's choice from its maker; the first-run setup offers Firefox too. We ship none (Edge is Microsoft's). Internet Explorer (Gecko 2.47) for simple pages. |
 | WebView2 apps | Work with the user-installed Evergreen runtime since wine-sg 10.0-52 (0190-0191: DirectComposition and composition swap chains); before, pages loaded but were never drawn. Gate `make test-webview2`. |
