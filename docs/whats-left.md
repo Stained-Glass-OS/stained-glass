@@ -1,4 +1,4 @@
-# What's left (as of 2026-09-25)
+# What's left (as of 2026-09-26)
 
 A snapshot taken when the first test ISO was built (`sg-image: make iso`),
 so work can pick up here. Each repo's `CLAUDE.md` has the detail and the
@@ -24,6 +24,26 @@ the app inventory is `default-apps.md`.
   Resource Monitor; SCM access checks; pipe impersonation.
 - Compatibility: Git for Windows' terminal works (0081-0083); CJK fonts.
 - A bootable hybrid ISO (DVD / VM CD drive / USB stick), installs from it.
+
+## Done 2026-09-26
+
+- Compatibility tab: right-click a program (or its shortcut) > Properties >
+  Compatibility -- run as if on an older version, as administrator, in a
+  window of its own, DXVK or WineD3D, environment variables and launch
+  arguments (the tweaks ProtonDB reports suggest), recommended settings per
+  program. Applied however the program starts, Steam included (wine-sg 0420,
+  10.0-81; sg-shell 0.1.0-53). Open: the recommended-settings list itself.
+- Elevated programs get a display of their own (B56); printing works for
+  users; domain identity and machine GPO startup scripts.
+- Communication round landed: Zoom's and Teams' start-up failures
+  (0425-0426), Thunderbird's GetCurrentApplicationUserModelId (0423),
+  downloads no longer leave `file:Zone.Identifier` files (0422), ucrtbase
+  intmax functions (0421), IDXGIKeyedMutex on WineD3D (0424).
+- Direct2D geometries answer area/length/containment/outline, arcs are arcs,
+  and command lists have real bounds (0427) -- the cause of Paint.NET's
+  paintbrush hang; to be re-checked in Paint.NET itself.
+- The ISO boots from a Ventoy stick as well as dd/DVD; the live boot no
+  longer hangs on the splash; the server keeps only the newest ISO.
 
 ## Open, by area
 
@@ -55,8 +75,8 @@ the app inventory is `default-apps.md`.
   exits on missing `Windows.ApplicationModel.LimitedAccessFeatures` (fixes
   drafted, not gated); Skype is discontinued. Discord, Spotify, Telegram,
   Signal, Thunderbird mail flows and browser daily use (video, downloads,
-  printing, pickers, notifications) are mid-investigation; see wine-sg
-  CLAUDE.md for what each agent found and where the drafts are.
+  printing, pickers, notifications) are mid-investigation; the Zoom, Teams
+  and Thunderbird fixes landed 2026-09-26 (above) -- each app to be re-run.
 - Creative/media round (wine-sg 0340-0342, 10.0-77): Direct2D layers,
   blend/composite modes and effect-graph fixes -- Paint.NET 5's canvas,
   colour wheel and swatches now draw; a paintbrush drag still hangs it
@@ -160,10 +180,9 @@ the app inventory is `default-apps.md`.
   a VM.
 
 ### Platform
-- Domain: real domain SID in Wine; machine GPOs from the domain.
 - MSIX deployment (Store apps) in progress in wine-sg.
 - winex11 BadWindow under Xvfb; desktop surface flush clipping.
 - Out of scope (David, 2026-09-25): a signed boot chain (Secure Boot) and
   legacy BIOS boot. UEFI, unsigned, is the target.
-- The apt site cannot carry files over 100 MB (GitHub), so the speech model
-  ships only in the image/ISO.
+- apt and ISOs are on https://freesoft.page (apt/, iso/); the speech model
+  ships as a package there too.
