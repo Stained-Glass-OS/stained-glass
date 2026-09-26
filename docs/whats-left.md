@@ -44,6 +44,13 @@ the app inventory is `default-apps.md`.
   and history/layers panels and canvas come up, but it is not usable yet:
   the canvas shows the transparency checkerboard instead of the image, the
   colour swatches and wheel are not drawn, Direct2D layers are a stub.
+- Communication round (wine-sg 0380-0399, stopped early for usage): root
+  causes found -- Zoom crashes on the `SetThreadpoolTimerEx` stub, Teams
+  exits on missing `Windows.ApplicationModel.LimitedAccessFeatures` (fixes
+  drafted, not gated); Skype is discontinued. Discord, Spotify, Telegram,
+  Signal, Thunderbird mail flows and browser daily use (video, downloads,
+  printing, pickers, notifications) are mid-investigation; see wine-sg
+  CLAUDE.md for what each agent found and where the drafts are.
 - GTK 4 programs (Pinta) draw text misshapen (glyph parts missing).
 - Colour emoji: GDI draws them in one colour (as on Windows); DirectWrite
   colour glyphs not checked. No CJK Extension B font in the image.
