@@ -94,7 +94,14 @@ wine-sg's `test/compat/run.sh` (install, launch, main window, close) against
 | Microsoft Teams (new, MSIX) | Adds; exits at start (a missing WinRT class, then WebView2). |
 | Adobe Acrobat Reader | Installer exits with an error. |
 | Microsoft 365 (online installer) | Click-to-Run never finishes. |
-| Visual Studio Build Tools | Bootstrapper crashes. |
+| Visual Studio Build Tools | Bootstrapper rejects its installer's signature (Wine Mono's certificate chain: no intermediate fetch, no CRLs). |
+| .NET SDK 8 (console, WinForms, WPF) | Yes -- `dotnet new/build/run` needed wine-sg 0320. |
+| Go 1.27, CMake 4.4, Rust 1.98 (GNU) | Yes -- Go needed 0321 (its installer's `%USERPROFILE%` variables). |
+| Python 3.12 venv + pip (numpy, cryptography, lxml) | Yes -- numpy needed 0322 (C99 complex functions). |
+| Node.js npm native modules (better-sqlite3, bcrypt, esbuild) | Yes. |
+| Git for Windows: HTTPS clone, commit, Credential Manager | Yes -- the credential manager needed 0323. |
+| VS Code: extensions, integrated terminal | Yes -- the terminal needed 0324; its default PowerShell profile has no shell (use Command Prompt). |
+| WinMerge, Sublime Text, Sysinternals (sigcheck, handle) | Yes. |
 | Steam games | Steam needs a signed-in account; not tested headless. |
 
 ## How the Windows names reach our programs

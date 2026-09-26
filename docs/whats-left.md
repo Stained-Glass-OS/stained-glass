@@ -38,6 +38,12 @@ the app inventory is `default-apps.md`.
   (`LimitedAccessFeatures`, then WebView2), Acrobat Reader (installer exits
   67), Microsoft 365 (Click-to-Run hangs), VS Build Tools (bootstrapper
   crashes). See default-apps.md.
+- Developer tools (wine-sg 0320-0324, 10.0-74): .NET SDK, Go, CMake, Rust,
+  pip/npm native packages, Git + Credential Manager, VS Code's terminal
+  work. Open: VS Build Tools (Wine Mono's X509Chain: needs AIA fetch and
+  CRLs in a Wine Mono build), PowerShell for VS Code's default terminal;
+  not yet run: GitHub Desktop, Postman, Insomnia, MSYS2, JetBrains IDEs,
+  Android Studio.
 - Paint.NET 5 starts (wine-sg 0223-0234: Direct2D effects and command
   lists drawn, a first Windows.UI.Composition -- compositor, visuals,
   brushes, drawing surfaces, desktop window targets). Its main window, tool
