@@ -73,12 +73,10 @@ the app inventory is `default-apps.md`.
   ~20 s of Wine's first start and default imports from the compressed root).
 - Chrome in a VM with a real display (virgl), 4 GB of memory, on the released
   image (10.0-93): runs, 7 processes, 2 GB free, no GPU-process exits, no OOM.
-- Firefox's popups (permission doorhanger, panels) have a thick black frame
-  under our real compositor too, not only under Xvfb: Firefox asks for a
-  "sheet of glass" with DwmExtendFrameIntoClientArea, a stub in Wine, so the
-  transparent shadow margin is drawn black. Fix: a window with glass needs an
-  ARGB visual under Xwayland and a window surface that keeps its alpha
-  (winex11 already does this for per-pixel-alpha layered windows).
+- Firefox's popups (permission doorhanger, panels) had a thick black frame:
+  Firefox asks for a "sheet of glass" with DwmExtendFrameIntoClientArea, a
+  stub in Wine. Fixed in 0435 (10.0-94): such a window gets an ARGB visual
+  and a surface that keeps its alpha (gate: test-glass).
 - Teams (new, MSIX) run unpackaged gets past LimitedAccessFeatures (0426) but
   crashes on a fresh profile (a read of address 9 in a Wine DLL) or exits; it
   needs a proper run from its installed MSIX (our appx deployment + WebView2).
@@ -134,12 +132,18 @@ the app inventory is `default-apps.md`.
 - Setting the time zone from Windows programs (`SetDynamicTimeZoneInformation`
   through sg-admind) is not wired.
 
-### Notifications from Windows programs (next big feature)
-- `Windows.UI.Notifications` (toasts) is not implemented: Firefox's web
-  notifications fail quietly (onerror); Teams, Slack, Discord and Chrome use
-  the same API. Needs ToastNotificationManager/ToastNotifier/ToastNotification,
-  `Windows.Data.Xml.Dom.XmlDocument` for the toast XML, a toast window (the
-  Clock app already draws one) and activation back to the program.
+### Notifications from Windows programs
+- Toasts work (0436-0437, 10.0-94): `Windows.UI.Notifications` and
+  `Windows.Data.Xml.Dom` in windows.ui; a toast shows bottom right with the
+  program's icon, texts, logo and buttons; clicks and dismissals reach the
+  program (Firefox web notifications: shown, its Settings button opens
+  Settings). Gate: test-toast.
+- Left: a notification centre (history) in sg-shell, activating a program
+  that is not running (INotificationActivationCallback via its COM server),
+  scheduled toasts, the notification sound, per-app settings UI (the
+  settings the notifier reads: HKCU ...\PushNotifications ToastEnabled and
+  ...\Notifications\Settings\<AUMID> Enabled).
+
 - Boot splash: Plymouth never shows the diamond (black, then the text console
   from ~11 s). Plymouth is not in the initrd, and getting our theme there
   needs a local package (mkosi's PackageDirectories is avoided for a reason in
