@@ -57,13 +57,20 @@ the app inventory is `default-apps.md`.
   512-byte file alignment (Chrome, Edge, every Electron app) share their
   pages between processes, and huge PAGE_NOACCESS reservations (V8's cages)
   no longer cost 8 MB of page-protection table per 32 GB. Chrome on one page:
-  ~4.2 GB -> under 1 GB. Harness: sg-image `make chrome-gpu-test`.
+  ~4.2 GB -> under 1 GB. Harness: sg-image `make chrome-gpu-test`. Then
+  Chrome quit ~12 s after starting: its sandbox CHECKs that kernelbase exports
+  AppContainerRegisterSid (found with Chrome's public symbols); 0434
+  (10.0-93) adds the AppContainer SID-name exports and Chrome stays up and
+  renders pages.
 - Reruns: Zoom starts to its home screen (0425). Thunderbird downloads mail
   and keeps running (0423 + 0433 NtQueryWnfStateData). Firefox no longer
   crashes on a web notification (0423).
 - Boot: every boot waited a full minute for the service manager because the
   readiness check ran `sc query` with no service name, a usage error (sg-session
-  0.1.0-45 asks about PlugPlay).
+  0.1.0-45 asks about PlugPlay; the SCM now answers after 0 s).
+- Teams (new, MSIX) run unpackaged gets past LimitedAccessFeatures (0426) but
+  crashes on a fresh profile (a read of address 9 in a Wine DLL) or exits; it
+  needs a proper run from its installed MSIX (our appx deployment + WebView2).
 
 ## Open, by area
 
