@@ -67,7 +67,18 @@ the app inventory is `default-apps.md`.
   crashes on a web notification (0423).
 - Boot: every boot waited a full minute for the service manager because the
   readiness check ran `sc query` with no service name, a usage error (sg-session
-  0.1.0-45 asks about PlugPlay; the SCM now answers after 0 s).
+  0.1.0-45 asks about PlugPlay; the SCM now answers after 0 s). Firmware to
+  Setup on the live ISO: 116 s -> 48 s (budget 90 s). What is left there is
+  sg-prefix-init on the live medium (12 s unpacking the baked prefix into RAM,
+  ~20 s of Wine's first start and default imports from the compressed root).
+- Chrome in a VM with a real display (virgl), 4 GB of memory, on the released
+  image (10.0-93): runs, 7 processes, 2 GB free, no GPU-process exits, no OOM.
+- Firefox's popups (permission doorhanger, panels) have a thick black frame
+  under our real compositor too, not only under Xvfb: Firefox asks for a
+  "sheet of glass" with DwmExtendFrameIntoClientArea, a stub in Wine, so the
+  transparent shadow margin is drawn black. Fix: a window with glass needs an
+  ARGB visual under Xwayland and a window surface that keeps its alpha
+  (winex11 already does this for per-pixel-alpha layered windows).
 - Teams (new, MSIX) run unpackaged gets past LimitedAccessFeatures (0426) but
   crashes on a fresh profile (a read of address 9 in a Wine DLL) or exits; it
   needs a proper run from its installed MSIX (our appx deployment + WebView2).
