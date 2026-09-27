@@ -50,6 +50,20 @@ the app inventory is `default-apps.md`.
   all CPUs). Open: saving untested.
 - The ISO boots from a Ventoy stick as well as dd/DVD; the live boot no
   longer hangs on the splash; the server keeps only the newest ISO.
+- Chrome, checked in a VM with a real display (virgl, the host's GPU): its
+  GPU process is fine there -- the "GPU process dies" was an Xvfb/llvmpipe
+  artefact -- but every Chrome process started with 300-750 MB and an 8 GB
+  machine ran out of memory. Fixed (wine-sg 0431, 0432, 10.0-91): DLLs with
+  512-byte file alignment (Chrome, Edge, every Electron app) share their
+  pages between processes, and huge PAGE_NOACCESS reservations (V8's cages)
+  no longer cost 8 MB of page-protection table per 32 GB. Chrome on one page:
+  ~4.2 GB -> under 1 GB. Harness: sg-image `make chrome-gpu-test`.
+- Reruns: Zoom starts to its home screen (0425). Thunderbird downloads mail
+  and keeps running (0423 + 0433 NtQueryWnfStateData). Firefox no longer
+  crashes on a web notification (0423).
+- Boot: every boot waited a full minute for the service manager because the
+  readiness check ran `sc query` with no service name, a usage error (sg-session
+  0.1.0-45 asks about PlugPlay).
 
 ## Open, by area
 
@@ -101,6 +115,19 @@ the app inventory is `default-apps.md`.
   colour glyphs not checked. No CJK Extension B font in the image.
 - Setting the time zone from Windows programs (`SetDynamicTimeZoneInformation`
   through sg-admind) is not wired.
+
+### Notifications from Windows programs (next big feature)
+- `Windows.UI.Notifications` (toasts) is not implemented: Firefox's web
+  notifications fail quietly (onerror); Teams, Slack, Discord and Chrome use
+  the same API. Needs ToastNotificationManager/ToastNotifier/ToastNotification,
+  `Windows.Data.Xml.Dom.XmlDocument` for the toast XML, a toast window (the
+  Clock app already draws one) and activation back to the program.
+- Boot splash: Plymouth never shows the diamond (black, then the text console
+  from ~11 s). Plymouth is not in the initrd, and getting our theme there
+  needs a local package (mkosi's PackageDirectories is avoided for a reason in
+  mkosi.conf) or an extra initrd on every boot entry.
+- The lab account `sguser` has HOME=/var/lib/stained-glass, not writable by it:
+  no Mesa shader cache in lab sessions (real accounts are unaffected).
 
 ### File Explorer
 - Round 2 landed (wine-sg 0150-0157, sg-session 0.1.0-28, sg-shell
