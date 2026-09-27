@@ -1,4 +1,4 @@
-# What's left (as of 2026-09-26)
+# What's left (as of 2026-09-27)
 
 A snapshot taken when the first test ISO was built (`sg-image: make iso`),
 so work can pick up here. Each repo's `CLAUDE.md` has the detail and the
@@ -80,6 +80,25 @@ the app inventory is `default-apps.md`.
 - Teams (new, MSIX) run unpackaged gets past LimitedAccessFeatures (0426) but
   crashes on a fresh profile (a read of address 9 in a Wine DLL) or exits; it
   needs a proper run from its installed MSIX (our appx deployment + WebView2).
+
+## Done 2026-09-27 (field report: ThinkPad X1, live ISO via Ventoy)
+
+- Setup's dropdowns no longer crash the compositor (override-redirect
+  popups, sg-compositor sg7); Ctrl+Alt+Del opens the security screen (Lock,
+  Sign out, Task Manager, power; sg8 + sg-session 0.1.0-48); the lock screen
+  and greeter have power buttons and the live account signs in without a
+  password; shutdown from a Ventoy stick is clean (sg-image 43a0123,
+  sg-wineserver ExecStop).
+- Edge in "Get a web browser"; network icon states, tooltip and rescans;
+  no Wine logo as the default window icon (0441); cmd banner (0440);
+  shutdown.exe (0438) and sign-out (0439); Run as administrator on
+  shortcuts (0444); elevated programs follow the user's modes and accent;
+  programs follow the accent colour; battery icon (sg-battery, 0445).
+- Virtual desktops: four by default, a desktop pager on the taskbar with
+  the Task View button beside it, Task View button reopens (0446).
+- Still open: Wi-Fi scanning on the reporter's iwlwifi laptop was not
+  reproduced (works on the VM hwsim rig); needs `nmcli dev status` /
+  `rfkill list` from the machine.
 
 ## Open, by area
 
