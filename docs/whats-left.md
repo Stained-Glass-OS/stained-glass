@@ -45,9 +45,9 @@ the app inventory is `default-apps.md`.
   and command lists have real bounds (0427). Paint.NET 5's paintbrush draws
   (0429: a Clear no longer makes a stamp's command list unbounded; alpha-only
   WIC render targets for brush masks, drawn over what they held; effect
-  drawing serialised on multi-threaded factories). Open: a fast stroke over
-  earlier ones, rendered on several threads, can leave a stray piece (exact
-  on one CPU -- a race not yet found); saving untested.
+  drawing serialised on multi-threaded factories; 0430: a reused WIC target
+  draws from the bitmap's pixels at each BeginDraw -- strokes are exact on
+  all CPUs). Open: saving untested.
 - The ISO boots from a Ventoy stick as well as dd/DVD; the live boot no
   longer hangs on the splash; the server keeps only the newest ISO.
 
