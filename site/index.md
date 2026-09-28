@@ -83,6 +83,11 @@ compatibility comes from re-implementing the documented Windows APIs ourselves.
 ![Stained Glass Settings](img/settings.png){: .shot}
 </div>
 
+<div class="grid" markdown="1">
+![Firefox, installed by first-run setup, showing this website](img/firefox.png){: .shot}
+![Steam, installed with its own installer, signing in](img/steam.png){: .shot}
+</div>
+
 ## Download {#download}
 
 <div class="notice" markdown="1">
@@ -108,6 +113,14 @@ firmware. Older builds and SHA-256 checksums are in [/iso/](iso/).
 Nothing on the computer changes until you run Setup's install.
 
 ![Setup: choosing where to install](img/setup-disk.png){: .shot}
+
+After the restart, first-run setup asks for your region, keyboard, network and privacy choices,
+and offers a web browser to install; then you sign in.
+
+<div class="grid" markdown="1">
+![First-run setup: privacy choices](img/oobe-privacy.png){: .shot}
+![The lock screen](img/lock.png){: .shot}
+</div>
 
 ## Package repository
 
