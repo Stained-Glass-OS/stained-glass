@@ -1,10 +1,10 @@
-# The oracle binary and any downloaded/extracted third-party payload NEVER ship
-# and are never committed. Only the harness code is tracked.
+# The ONLYOFFICE oracle binary NEVER ships and is never committed.
 oracle/
 *.deb
-extracted/
-*.docx
-*.xlsx
-*.pptx
-*.pdf
-*.png
+.venv/
+out/
+*.docbuilder
+# scratch round-trip outputs
+/rt-*.xlsx
+/rt-*.docx
+/rt-*.pptx

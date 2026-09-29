@@ -1,40 +1,70 @@
-# SG Office 2 -- QA rendering-fidelity oracle (dev/QA only, NEVER shipped)
+# SG Office 2 -- QA fidelity harness + round-trip gate (dev/QA only, NEVER shipped)
 
-This directory holds the harness for measuring our own office suite's document
-fidelity (see ADR 0016). It uses **ONLYOFFICE DocumentBuilder as a rendering
-oracle** -- "how an open document should render" -- for QA comparison only.
+This directory is the fidelity harness for our own office suite (ADR 0016). It
+uses **ONLYOFFICE's engine as a rendering/round-trip oracle** -- "how an open
+document should render" -- for QA comparison only.
 
 **Hard rule:** the ONLYOFFICE binary is a third-party AGPL tool. It is **never**
 installed system-wide, **never** committed to any repo, and **never** placed in
-the OS or ISO. `fetch-oracle.sh` downloads it into a git-ignored dev/QA path
-outside the image. Only this harness code is version-controlled.
+the OS or ISO. `fetch-oracle.sh` (and `make oracle`) download it into the
+git-ignored `oracle/` path. Only the harness code + a small tracked corpus are
+version-controlled.
+
+## Quick start
+
+    make test        # fetch oracle if needed, round-trip the corpus, gate vs baseline
+    make baseline    # (re)write baseline.json from the current engine
+    make corpus      # regenerate the independent corpus (needs the venv libs)
+
+`make test` opens `corpus/src.{docx,xlsx,pptx}` in the engine, saves each back
+to the same OOXML format, and checks a fixed feature set survived. Exit 0 =
+gate pass; exit 1 = a feature the baseline recorded as preserved was lost.
+
+Current score: **23/23 = 100.0/100** on the Phase 1 corpus (one file per format).
 
 ## The oracle
 
-- Package: `onlyoffice-documentbuilder_amd64.deb`
-- Version pinned: **8.2.0-143**
+- Package: `onlyoffice-documentbuilder_amd64.deb`, version pinned **8.2.0-143**
 - URL: https://download.onlyoffice.com/install/desktop/docbuilder/linux/onlyoffice-documentbuilder_amd64.deb
 - SHA-256 (2026-09-29): `5dd570200cb72db9f59a4e31dc7ad8af5d2de979c194f45f4fc2a7785cf67d70`
-- Runs headless, no root, no X: extract with `dpkg-deb -x`, run
-  `LD_LIBRARY_PATH=<dir> ./docbuilder script.docbuilder`.
-- Known quirk (this build): `GetRange(...).GetValue()` after `OpenFile` on an
-  .xlsx throws `TypeError: Cannot read property 'Vd'`. Read values via
-  conversion (x2t -> PDF/CSV) or rendered output, not the live GetValue API.
+- Runs **headless, no root, no X**: `dpkg-deb -x` extract, then
+  `LD_LIBRARY_PATH=<dir> ./docbuilder script.docbuilder`. Ships `docbuilder`,
+  `x2t` (OOXML/ODF/PDF converter), `sdkjs/` and `libdoctrenderer.so`.
+
+## Two findings that shape the plan (measured 2026-09-29)
+
+1. **Spreadsheets need an explicit recalc on open.** A passive open->save keeps
+   the formula but writes no cached value; `Api.RecalculateAllFormulas()` (which
+   an interactive open triggers) makes the engine compute -- e.g. `=SUM(B2:B3)`
+   -> `7`, `=TEXTJOIN("-",TRUE,B2,B3)` -> `3-4`. The harness calls it for .xlsx.
+   The read path uses the saved file's cached `<v>` (the live
+   `GetRange(...).GetValue()` throws `TypeError: 'Vd'` in this build).
+
+2. **The prebuilt `documentbuilder` runs the engine from a baked-in V8
+   snapshot, not the on-disk `sdkjs/*.js`.** A prepended fault in
+   `sdkjs/cell/sdk-all.js` does not change behaviour and does not even surface.
+   **Consequence:** the engine cannot be edited by patching the extracted
+   binary. Editing the engine (our LAMBDA family, Excel error values, SG Office
+   Functions as native sdkjs functions) requires **building sdkjs + the
+   doctrenderer snapshot from source** (gcc + node/grunt, per ADR 0016) -- that
+   is the next Phase 1 milestone, and this finding makes it a prerequisite for
+   editability, not an optimisation.
 
 ## Three-way scored metric (per ADR 0016)
 
-For each corpus document, score = mean of:
-  (1) round-trip feature preservation (fraction of checked features kept), and
-  (2) rendered-page image similarity (x2t -> PDF -> PNG, SSIM),
-reported 0-100, for three renderers:
-  - **ours**   -- our ONLYOFFICE-derived engine (once it exists)
-  - **msref**  -- Microsoft Office reference (expected values in the corpus)
-  - **oo**     -- ONLYOFFICE oracle (this tool)
-The formula corpus (sg-shell office/parity, 775 cases) keeps its existing
-match/differ/missing verdicts and is engine-independent.
+Per corpus document, score = round-trip feature preservation (implemented here)
++, when we render, rendered-page image similarity (x2t -> PDF -> PNG, SSIM), for
+three renderers: **ours** (our from-source engine, once built), **msref** (MS
+Office reference, the expected values), **oo** (ONLYOFFICE oracle). The formula
+corpus (sg-shell `office/parity`, 775 cases) keeps its match/differ/missing
+verdicts and is engine-independent. Phase 1 implements the round-trip half as a
+gate; image-SSIM and the from-source "ours" engine follow.
 
-## Status
+## Files
 
-Phase 0: oracle installed and smoke-tested; scoring defined. The scored harness
-runner and its `make test-*` gate land in Phase 1, after the lead's go/no-go on
-the base (ADR 0016).
+- `fetch-oracle.sh` -- fetch + sha-verify the oracle into `oracle/` (git-ignored)
+- `gen_corpus.py`   -- write the independent corpus with python-docx/openpyxl/python-pptx
+- `roundtrip.py`    -- open->save->check each file; score; gate vs baseline
+- `corpus/`         -- the tracked source documents (regenerate with `make corpus`)
+- `baseline.json`   -- the gate baseline (per pinned oracle version)
+- `Makefile`        -- `test` (gate), `baseline`, `corpus`, `oracle`, `clean`
