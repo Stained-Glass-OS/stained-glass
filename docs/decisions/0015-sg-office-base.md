@@ -41,7 +41,7 @@ tab colours; layouts, bullets, tables, charts, pictures, notes), round-tripped.
 
 | | LibreOffice 26.8.0 (Windows, TDF's MSI) + SG Office's payload | ONLYOFFICE 9.4.0 |
 |---|---|---|
-| Formula corpus | 714/775 match Excel (with our add-in, SG Office Functions: TEXTSPLIT, TEXTBEFORE/AFTER, VSTACK/HSTACK, TAKE/DROP, CHOOSEROWS/COLS, TOROW/TOCOL, WRAPROWS/COLS, EXPAND, REGEX*, PERCENTOF, VALUETOTEXT, ARRAYTOTEXT, TRIMRANGE, IM* hyperbolic...) | 720/775 (DocumentBuilder, same JS engine as the editors) |
+| Formula corpus | 714/775 match Excel. 26.8 has TEXTSPLIT, TEXTBEFORE/AFTER, VSTACK/HSTACK, TAKE/DROP, CHOOSEROWS/COLS, TOROW/TOCOL, WRAPROWS/COLS, EXPAND, REGEXTEST itself; our add-in, SG Office Functions, supplies 16 more (BINOM.DIST.RANGE, DBCS, the IM* hyperbolic and reciprocal functions, PERCENTOF, PHONETIC, REGEXEXTRACT/REPLACE, TRIMRANGE, VALUETOTEXT: 20 cases, measured by removing it) | 720/775 (DocumentBuilder, same JS engine as the editors) |
 | LAMBDA, MAP, REDUCE, SCAN, BYROW/BYCOL, MAKEARRAY, GROUPBY/PIVOTBY | missing | missing (LET missing too) |
 | Excel error values, 1900 leap-year dates, TRUE>100 ordering | LibreOffice's own (Err:502 shown for #NUM!, DATE(1900,1,1)=2) | Excel's |
 | Dynamic arrays | Excel files' spilled ranges load as fixed array formulas; typing does not spill | spills |
