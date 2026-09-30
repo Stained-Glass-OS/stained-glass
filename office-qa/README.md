@@ -40,15 +40,14 @@ Current score: **23/23 = 100.0/100** on the Phase 1 corpus (one file per format)
    The read path uses the saved file's cached `<v>` (the live
    `GetRange(...).GetValue()` throws `TypeError: 'Vd'` in this build).
 
-2. **The prebuilt `documentbuilder` runs the engine from a baked-in V8
-   snapshot, not the on-disk `sdkjs/*.js`.** A prepended fault in
-   `sdkjs/cell/sdk-all.js` does not change behaviour and does not even surface.
-   **Consequence:** the engine cannot be edited by patching the extracted
-   binary. Editing the engine (our LAMBDA family, Excel error values, SG Office
-   Functions as native sdkjs functions) requires **building sdkjs + the
-   doctrenderer snapshot from source** (gcc + node/grunt, per ADR 0016) -- that
-   is the next Phase 1 milestone, and this finding makes it a prerequisite for
-   editability, not an optimisation.
+2. **The prebuilt `documentbuilder` runs the engine from V8 snapshots shipped
+   beside the JS** (`sdkjs/<editor>/sdk-all.bin` and `sdk-all.cache`), so
+   editing `sdk-all.js` next to them changes nothing. Without those two files
+   the host loads the JS and caches its own code -- which is how our own
+   engine runs. The engine is built from source, patched and gated in the
+   `sg-office` engine repo (ADR 0016 addendum): our host (Debian's V8) plus our
+   sdkjs passes this round-trip gate at 23/23, and the Excel corpus at
+   713/775, with a patch (PERCENTOF) proven by the corpus.
 
 ## Three-way scored metric (per ADR 0016)
 

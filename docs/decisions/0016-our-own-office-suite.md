@@ -247,3 +247,65 @@ configuration we re-express against the new shell.
 4. **Scope of Phase 1:** stand up a buildable native engine + minimal themed
    shell that opens and round-trips one .docx/.xlsx/.pptx, plus the fidelity
    harness as a `make test-*` gate -- before any parity feature work?
+
+## Addendum (2026-09-30): how the engine is built (M2)
+
+Measured while building it; each point is a decision the build now depends on.
+
+- **Sources, pinned.** ONLYOFFICE `sdkjs`, `core`, `web-apps` and `build_tools`
+  at tag `v8.2.0.143`, each pinned by commit in the engine repo's
+  `upstream.conf` (the version our dev/QA oracle is). The third-party sources
+  core compiles in (gumbo, katana, harfbuzz, hunspell) come at the commits
+  upstream's own fetch scripts pin; `hyphen`, which upstream clones unpinned,
+  is pinned by us. Moving to ONLYOFFICE 9.x is a later, measured step (its
+  core already carries a V8 12 path).
+- **Our changes are a patch series** (`patches/sdkjs/`, `patches/core/`, each
+  with a `series`), applied to the pinned upstream at build time -- the
+  wine-sg model: every change we make is a reviewable, attributable file, and
+  rebasing onto a new upstream is mechanical.
+- **The JS engine** builds with node and Google Closure Compiler's native
+  binary from npm (Apache-2.0; no Java, no Microsoft tools) in ~6 minutes.
+  Built unpatched, it reproduces upstream's builder tree file for file (bar
+  the V8 snapshots, code caches and per-machine font tables, which are
+  generated at install).
+- **The prebuilt host ignores on-disk JS.** Upstream ships `sdk-all.bin`
+  (a V8 startup snapshot) and `sdk-all.cache` per editor, and the host runs
+  those; editing `sdk-all.js` beside them changes nothing (the Phase 0 probe).
+  Without them the host loads our `sdk-all-min.js`/`sdk-all.js` and caches
+  its own code. `x2t -create-js-snapshots` regenerates snapshots from our JS.
+- **The native core builds against Debian, not bundled libraries**, in an
+  `sg_debian` qmake mode our core patches add:
+  - **V8 is Debian's** -- the one in `libnode` (V8 11.3, nodejs 20), built
+    without pointer compression or sandbox. Upstream builds V8 8.9 from
+    Chromium's depot_tools with Google's bundled clang; libnode instead gives
+    an open, distribution-maintained V8 that gets Debian's security updates,
+    and it exports everything doctrenderer uses, `SnapshotCreator` included
+    (a standalone embedder run on it, Intl included, before the port).
+    doctrenderer's V8 layer is ~1,750 lines; the port replaces V8-internal
+    `src/base` calls with sysconf/getrlimit and uses `DisposePlatform`.
+  - ICU 76, OpenSSL 3.5, zlib, Boost 1.83 from Debian in place of the bundled
+    ICU 58, OpenSSL, zlib 1.2.11 (which has known CVEs) and Boost 1.72.
+  - GCC 14 turned several C diagnostics into errors; upstream's bundled C
+    (cximage's codecs, minizip) keeps them warnings in `sg_debian`, as with
+    the older GCC upstream uses. Missing standard headers (`<cfloat>`,
+    `<array>`) are added.
+  - **Debt:** cximage's bundled image codecs (jasper, libjpeg, libpng,
+    libtiff...) should come from Debian too; tracked in the engine repo.
+- **Builds run in a rootless trixie build root** (`mmdebstrap --mode=unshare`,
+  run with `bwrap` as the user), niced at `-j3`, under `/var/tmp/sgoffice`.
+- **The engine is gated by what it computes.** sg-shell's Excel corpus (775
+  cases over 530 functions) runs through our engine: 711 match Excel on
+  unpatched 8.2, 713 with our first patch (PERCENTOF). The corpus found real
+  ONLYOFFICE bugs we can now fix -- `MDETERM({3,6,1;1,1,0;3,10,2})` gives -36
+  (the determinant is 1), `"a"<"B"` is FALSE (Excel compares text without
+  case), `FLOOR(-2.5,2)` is #NUM! (Excel 2010+: -4).
+- **ONLYOFFICE's Section 7 terms bind the suite** (the engine repo's NOTICE):
+  the ONLYOFFICE logo is retained when distributing (7(b)) -- SG Office shows
+  it in its About box, matching "SG Office, based on ONLYOFFICE, logo kept";
+  no trademark licence (7(e)); ONLYOFFICE's GUI art is CC BY-SA 4.0.
+- **Editors' host (for M3):** the desktop editors need a browser engine;
+  upstream's desktop app uses prebuilt CEF binaries, which we will not ship.
+  The shell will host the editors in a browser engine Debian builds from
+  source (QtWebEngine or WebKitGTK), in a frameless window that draws its own
+  SG-styled title bar (sg-compositor gives native X11 windows taskbar entries
+  but no frame).
