@@ -309,3 +309,54 @@ Measured while building it; each point is a decision the build now depends on.
   source (QtWebEngine or WebKitGTK), in a frameless window that draws its own
   SG-styled title bar (sg-compositor gives native X11 windows taskbar entries
   but no frame).
+
+## Addendum (2026-09-30): the program around the editors (M3)
+
+- **QtWebEngine, as Debian builds it (6.8.2), hosts the editors** (David,
+  2026-09-30). ONLYOFFICE's editors are developed against Chromium, which
+  QtWebEngine is; upstream's desktop app ships prebuilt CEF binaries, which
+  we will not. The program is C++/Qt 6 (`app/` in the sg-office repository):
+  a frameless window with an SG-drawn title bar, one per document.
+- **Measured cost for the image** (it has no Qt today). Runtime dependencies,
+  as the difference between two rootless trixie roots -- an image-like
+  session base, and that base plus SG Office's runtime libraries: **90
+  packages, 433 MB installed**, of which QtWebEngine 256 MB
+  (libqt6webenginecore6 182, its data 56, its helper 18.5), Debian's V8 in
+  libnode 53 MB, ICU 37 MB (already in the image through libxml2), the rest
+  of Qt 6 about 45 MB. **SG Office itself: 287 MB installed (255 MB once
+  stripped), 59 MB compressed** -- after leaving out the help pages (0.46 GB
+  of screenshots; in-editor help is off), the mobile/embedded variants and
+  source maps, and letting x2t run the editors' own sdkjs instead of a second
+  copy. About 0.65 GB installed in all, ~0.25 GB of download.
+- **The editors talk to SG Office through one origin.** Everything they load
+  -- the editors, the open document's folder, and the program's answers --
+  comes from `sgoffice://app`; fonts from `ascdesktop://fonts`, the address
+  the engine asks at, served only for fonts in the user's font tables (our
+  `allfontsgen`, run at start into the user's cache). `bridge.js` implements
+  the `AscDesktopEditor` interface the desktop editors call (the one
+  ONLYOFFICE's CEF host provides natively): open = x2t into the folder,
+  the editor's changes kept as x2t reads them, Save/Save As = x2t with the
+  changes replayed, written beside the target and renamed over it.
+  Encryption, signatures, plugins, macros and media answer "not supported"
+  for now. Qt's permissions: the clipboard for our origin only.
+- **SG Office's look through the editors' own theme mechanism**: Stained
+  Glass OS's white surfaces and purple accent, and each program's colour (the
+  SG Office icons' blue, green, orange) on its header -- no patch to the
+  editors' stylesheets.
+- **Formats**: Microsoft's are the defaults (new documents, Save keeps a
+  .docx a .docx); OpenDocument and PDF are in Save As; .doc/.xls/.ppt open
+  and are saved through Save As.
+- **Integration with sg-shell** (sg-shell 0.1.0-79): the three SG Office
+  programs the Start menu, file types and Default apps already use start the
+  native editors when package sg-office-editors is installed, handing Wine
+  paths over as Unix paths; LibreOffice otherwise, or when an administrator
+  sets `Editors = "LibreOffice"`, or for `/p` (printing is not done yet). So
+  the interim suite keeps shipping unchanged until sg-office-editors is
+  published.
+- **Gated end to end**: the program runs headlessly (its own Xvfb in the build
+  root, a scratch HOME) and is driven as a person drives it -- a click, End,
+  typing, Save -- for a .docx, .xlsx and .pptx that our own code writes; the
+  saved file has the text and every round-trip feature, Save As writes valid
+  .odt/.ods/.odp, the original stays untouched, and each header is its SG
+  colour. Mutants -- the editor's changes dropped, a faked save, the theme
+  missing, a linked path kept -- each fail it.
