@@ -109,7 +109,8 @@ def page(title, body, depth=0):
 </div></main>
 <footer><div class="wrap">Stained Glass OS is free software: AGPL-3.0-or-later for new code,
 upstream licences for Wine and Debian. Not affiliated with Microsoft; Windows is a trademark of
-Microsoft Corporation.</div></footer>
+Microsoft Corporation.<br>"Set time zone automatically" uses <a href="https://db-ip.com">IP Geolocation by DB-IP</a>
+and <a href="https://www.geonames.org">GeoNames</a> data (CC BY 4.0).</div></footer>
 </body></html>
 """
 
