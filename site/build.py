@@ -102,7 +102,7 @@ def page(title, body, depth=0):
 <header class="top"><div class="wrap">
 <a class="brand" href="{up}index.html">{LOGO}Stained Glass OS</a>
 <nav><a href="{up}index.html#download">Download</a><a href="{up}docs/index.html">Docs</a>
-<a href="{up}apt/">Packages</a><a href="{up}iso/">ISOs</a><a href="{GITHUB}">Source</a></nav>
+<a href="{up}apt/">Packages</a><a href="{up}iso/">ISOs</a><a href="{up}reports/">Debug Reports</a><a href="{GITHUB}">Source</a></nav>
 </div></header>
 <main><div class="wrap">
 {body}
