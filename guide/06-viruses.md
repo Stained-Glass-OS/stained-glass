@@ -47,10 +47,18 @@ From a terminal: `/etc/stained-glass/defender.conf` holds `enabled=1` or
 
 ## If something was quarantined
 
-Quarantined files are kept in `/var/lib/stained-glass/defender/quarantine/`,
-each with a note of where it came from and what was found. If you are sure a
-file is safe (a false alarm), an administrator can copy it back from there.
-Otherwise, delete it.
+A notice pops up above the tray: which file, in which folder, and what
+was found. **Review** opens **Settings > Virus & threat protection**, which
+lists everything quarantined from your files, each with two buttons:
+
+- **Delete** removes it for good.
+- **Restore** puts it back where it was, after a warning. Use it only for a
+  file you know is safe, such as a false alarm in a tool you trust. The
+  restored file is not stopped again (SG Defender remembers that exact file
+  by its fingerprint, so a changed copy is still checked).
+
+Both need an administrator. Quarantined files are kept in
+`/var/lib/stained-glass/defender/quarantine/`, which only root can open.
 
 ## What else protects you
 
