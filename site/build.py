@@ -146,8 +146,11 @@ def main():
     with open(os.path.join(OUT, "index.html"), "w") as f:
         f.write(page("Stained Glass OS", fix_links(md(front))))
 
-    entries = {"docs": [], "decisions": []}
-    for sub, depth, key in (("docs", 1, "docs"), ("docs/decisions", 2, "decisions")):
+    entries = {"docs": [], "decisions": [], "guide": []}
+    # the guide (guide/*.md): written for people using and running the
+    # system, ahead of the project's own notes
+    os.makedirs(os.path.join(OUT, "docs", "guide"), exist_ok=True)
+    for sub, depth, key in (("guide", 2, "guide"), ("docs", 1, "docs"), ("docs/decisions", 2, "decisions")):
         src = os.path.join(REPO, sub)
         for name in sorted(os.listdir(src)):
             if not name.endswith(".md") or name.startswith("0000-"):
@@ -156,16 +159,21 @@ def main():
                 text = f.read()
             title = title_of(text, name[:-3])
             outname = name[:-3] + ".html"
-            with open(os.path.join(OUT, sub, outname), "w") as f:
+            outdir = os.path.join(OUT, "docs", "guide") if key == "guide" else os.path.join(OUT, sub)
+            with open(os.path.join(outdir, outname), "w") as f:
                 f.write(page(title + " -- Stained Glass OS", fix_links(md(text)), depth))
             entries[key].append((outname, title))
 
+    guide = "\n".join(f'<li><a href="guide/{n}">{html.escape(t)}</a></li>' for n, t in entries["guide"])
     items = "\n".join(f'<li><a href="{n}">{html.escape(t)}</a></li>' for n, t in entries["docs"])
     decs = "\n".join(f'<li><a href="decisions/{n}">{html.escape(t)}</a></li>' for n, t in entries["decisions"])
-    body = (f"<h1>Documentation</h1><p>The project's own documents, rendered from the "
+    body = (f"<h1>Documentation</h1>"
+            f'<h2>Guide</h2><p>Using, running and supporting Stained Glass, and how it fits together.</p>'
+            f'<ul class="doclist">{guide}</ul>'
+            f"<h2>Project notes</h2><p>The project's own working documents, rendered from the "
             f'<a href="{GITHUB}/stained-glass">stained-glass</a> repository. Each code repository\'s '
             f"<code>CLAUDE.md</code> has the engineering detail.</p>"
-            f'<h2>Documents</h2><ul class="doclist">{items}</ul>'
+            f'<ul class="doclist">{items}</ul>'
             f'<h2>Architecture decisions</h2><ul class="doclist">{decs}</ul>')
     with open(os.path.join(OUT, "docs", "index.html"), "w") as f:
         f.write(page("Documentation -- Stained Glass OS", body, 1))
