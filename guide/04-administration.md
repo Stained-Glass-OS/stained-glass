@@ -49,10 +49,10 @@ PS C:\users\jane\Documents> bash -c 'ls -la; df -h /'
 PS C:\users\jane\Documents> bash ./fix-something.sh
 ```
 
-Its exit status comes back to PowerShell (`$LASTEXITCODE`). Typing into an
-interactive bash started from inside an interactive PowerShell does not work
-yet -- run commands as above, or `exit` PowerShell to return to the bash it
-came from.
+Its exit status comes back to PowerShell (`$LASTEXITCODE`). Plain `bash`
+opens an interactive bash in the same terminal -- over SSH too -- with its
+own line editing and job control; Ctrl+C stops bash's command, not
+PowerShell, and `exit` returns to PowerShell where you left it.
 
 ## Restarting things
 
