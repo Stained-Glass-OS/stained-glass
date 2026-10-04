@@ -38,6 +38,31 @@ kind of program you use. **File Explorer** (Win+E) shows them.
 - **Ctrl+N** opens another window.
 - USB sticks and discs appear under **This PC** with a drive letter.
 
+## Terminals
+
+- **Terminal** (Start, or **Win+X > Terminal**) holds PowerShell, Command
+  Prompt and other shells in tabs and panes: **Ctrl+Shift+T** opens a tab,
+  the **+** button's arrow chooses which shell. PowerShell or Command Prompt
+  started any other way -- Start, a shortcut, a program -- opens as a
+  Terminal tab too, as on Windows 11. To have them in console windows of
+  their own instead: Terminal's **Settings > Default terminal application >
+  Console window**.
+- **Linux Terminal** (Start) is the Linux side's shell, with tabs as well:
+  **Ctrl+Shift+T** a new tab, **Ctrl+Shift+C** / **Ctrl+Shift+V** copy and
+  paste, and a right-click for Copy, Paste and the tab commands.
+- In a console window, drag to select; a right-click copies the selection
+  (or pastes, when nothing is selected); **Ctrl+Shift+C** / **Ctrl+Shift+V**
+  work too.
+
+## Power
+
+**Settings > System > Power & sleep** sets when the screen turns off and the
+PC sleeps, what the power button does and -- on a laptop -- what closing the
+lid does, on battery and plugged in: Do nothing, Sleep, Hibernate or Shut
+down. The power button and the lid are the same for everyone on the PC, so
+changing them needs an administrator. **Control Panel > Hardware and Sound >
+Power Options** leads there too.
+
 ## Keyboard shortcuts
 
 | Keys | What they do |
