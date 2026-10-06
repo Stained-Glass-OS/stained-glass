@@ -110,7 +110,8 @@ def page(title, body, depth=0):
 <footer><div class="wrap">Stained Glass OS is free software: AGPL-3.0-or-later for new code,
 upstream licences for Wine and Debian. Not affiliated with Microsoft; Windows is a trademark of
 Microsoft Corporation.<br>"Set time zone automatically" uses <a href="https://db-ip.com">IP Geolocation by DB-IP</a>
-and <a href="https://www.geonames.org">GeoNames</a> data (CC BY 4.0).</div></footer>
+and <a href="https://www.geonames.org">GeoNames</a> data (CC BY 4.0).<br>
+<a href="{up}docs/ai-notes.html">AI architectural notes</a></div></footer>
 </body></html>
 """
 
@@ -167,16 +168,28 @@ def main():
     guide = "\n".join(f'<li><a href="guide/{n}">{html.escape(t)}</a></li>' for n, t in entries["guide"])
     items = "\n".join(f'<li><a href="{n}">{html.escape(t)}</a></li>' for n, t in entries["docs"])
     decs = "\n".join(f'<li><a href="decisions/{n}">{html.escape(t)}</a></li>' for n, t in entries["decisions"])
+    # People read the guide. The project's working notes and decision
+    # records -- terse, written for the AI agents that build Stained Glass OS
+    # and full of the owner's individual choices -- are on a page of their
+    # own, linked from here and every page's footer (2026-10-06).
     body = (f"<h1>Documentation</h1>"
             f'<h2>Guide</h2><p>Using, running and supporting Stained Glass, and how it fits together.</p>'
             f'<ul class="doclist">{guide}</ul>'
-            f"<h2>Project notes</h2><p>The project's own working documents, rendered from the "
-            f'<a href="{GITHUB}/stained-glass">stained-glass</a> repository. Each code repository\'s '
-            f"<code>CLAUDE.md</code> has the engineering detail.</p>"
-            f'<ul class="doclist">{items}</ul>'
-            f'<h2>Architecture decisions</h2><ul class="doclist">{decs}</ul>')
+            f'<p>For contributors and AI agents: the project\'s working notes and '
+            f'decision records are in the <a href="ai-notes.html">AI architectural notes</a>.</p>')
     with open(os.path.join(OUT, "docs", "index.html"), "w") as f:
         f.write(page("Documentation -- Stained Glass OS", body, 1))
+    notes = (f"<h1>AI architectural notes</h1>"
+             f"<p>The project's working documents and architecture decision records, kept for the AI "
+             f"agents that build Stained Glass OS and for contributors. They record decisions tersely, "
+             f"as working notes, and are not user documentation: for using the system, see the "
+             f'<a href="index.html">guide</a>. Rendered from the '
+             f'<a href="{GITHUB}/stained-glass">stained-glass</a> repository; each code repository\'s '
+             f"<code>CLAUDE.md</code> has the engineering detail.</p>"
+             f'<h2>Project notes</h2><ul class="doclist">{items}</ul>'
+             f'<h2>Architecture decisions</h2><ul class="doclist">{decs}</ul>')
+    with open(os.path.join(OUT, "docs", "ai-notes.html"), "w") as f:
+        f.write(page("AI architectural notes -- Stained Glass OS", notes, 1))
     print("site built in", OUT)
 
 

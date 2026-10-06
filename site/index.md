@@ -142,10 +142,9 @@ sudo apt update
 
 ## Status
 
-Stained Glass OS is in active development and **not yet ready for everyday use**. What works
-and what is left is tracked in [What's left](docs/whats-left.html); the app inventory is in
-[Default apps](docs/default-apps.html), and the design is in the
-[project brief](docs/BRIEF.html) and the [architecture decisions](docs/index.html).
+Stained Glass OS is in active development and **not yet ready for everyday use**. The
+[guide](docs/index.html) covers getting started, everyday use, programs, administration and
+[how it all fits together](docs/guide/05-how-it-works.html).
 
 ## Source
 
