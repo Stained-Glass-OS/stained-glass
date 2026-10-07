@@ -81,6 +81,13 @@ full-upgrade` updates a machine, and the same works over SSH for many.
 Updates download in the background and install at the next restart on their
 own.
 
+## The firewall
+
+Stained Glass Firewall is on by default and blocks connections other
+computers start, unless they are allowed -- see [The firewall](07-firewall.html).
+`sg-firewall status` shows what it is doing; `journalctl -u sg-firewall`
+what it allowed, asked about and blocked.
+
 ## Policy
 
 Group Policy works as on Windows for the machine and its users: `.reg` and
