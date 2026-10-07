@@ -13,7 +13,9 @@ have used one, nothing here will surprise you.
   updates, streaming -- and the answers to them -- go through as before.
 - Some things always pass because a network cannot work without them:
   getting an address from your router (DHCP), the messages IPv4 and IPv6
-  rely on, and the PC talking to itself.
+  rely on, and the PC talking to itself. Virtual machines and containers
+  running on your PC (virt-manager, GNOME Boxes, Docker, VirtualBox...)
+  reach it as before.
 
 ## Public and private networks
 
