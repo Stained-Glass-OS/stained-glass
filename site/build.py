@@ -24,9 +24,11 @@ REPO = os.path.dirname(HERE)
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(REPO, "build", "site")
 GITHUB = "https://github.com/Stained-Glass-OS"
 SITE = "https://freesoft.page/"
-# /.well-known/security.txt (RFC 9116) needs a real contact -- the owner's
-# choice, never guessed (site review 2026-10-07). Unset: no security.txt.
-SECURITY_CONTACT = os.environ.get("SG_SITE_SECURITY_CONTACT", "")
+# /.well-known/security.txt (RFC 9116): reports go to GitHub's private
+# vulnerability reporting, switched on for the stained-glass repository (the
+# owner's choice, 2026-10-07). Empty: no security.txt.
+SECURITY_CONTACT = os.environ.get("SG_SITE_SECURITY_CONTACT",
+                                  f"{GITHUB}/stained-glass/security/advisories/new")
 NOW = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
 
 
