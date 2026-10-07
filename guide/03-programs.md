@@ -44,6 +44,34 @@ open in frames like every other window, take part in Alt+Tab and Task View,
 and can be set as default apps (**Settings > Apps > Default apps**) -- Firefox
 as the web browser, for example.
 
+### AppImages
+
+Some Linux programs are published as an **AppImage**: one file, such as
+`Foo-x86_64.AppImage`, that holds the whole program. To install one you
+downloaded:
+
+1. Open it -- double-click it in File Explorer, or open it from your
+   browser's downloads (right-click > **Install** works too).
+2. The **Install an AppImage** window shows the program's name, version and
+   the file it came from. Tick **Remove the downloaded file** if you do not
+   want to keep a copy in Downloads, then press **Install**.
+
+The AppImage is copied into the **Applications** folder in your home folder
+(`~/Applications`, shown in File Explorer) and the program appears in Start
+with your other Linux apps, with its own icon. It is installed for you only,
+and needs no administrator. Installing it does not run it: like any download,
+an AppImage is a program from whoever made it, so install only ones you
+trust. SG Defender scans it in Downloads and again in Applications.
+
+- **A newer version:** install the new file the same way. It replaces the old
+  one -- Start keeps one entry.
+- **Uninstall:** **Settings > Apps** (or right-click it in Start >
+  **Uninstall**, which opens the list of programs), select it and press
+  **Uninstall**. The file, its Start entry and its icon are removed; its
+  settings in your home folder are kept.
+- Older AppImages (the "type 1" format from before 2017) cannot be installed;
+  the window says so. Ask the maker for a current AppImage.
+
 ## Starting programs at sign-in
 
 **Task Manager > Startup** lists what starts when you sign in, and turns items

@@ -19,7 +19,8 @@ and the scanner only has to look at what arrives from elsewhere.
 SG Defender is the **ClamAV** open-source antivirus engine, built in and on
 by default.
 
-- It watches every person's **Downloads** and **Desktop** folders. When a
+- It watches every person's **Downloads**, **Desktop** and **Applications**
+  (where AppImages are installed) folders. When a
   program, installer, script, archive or macro-capable document finishes
   arriving there, it is scanned. A browser's half-finished download is
   scanned once it is complete.
