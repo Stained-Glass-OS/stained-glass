@@ -86,3 +86,61 @@ own.
 Group Policy works as on Windows for the machine and its users: `.reg` and
 `.pol` files placed in `/etc/stained-glass/policy.d/` apply at every start;
 `sg-gpupdate` applies them now.
+
+## A kiosk: a tablet that runs one app
+
+A device that is meant for one job -- a tablet by the stereo that only plays
+music with the Sonos app, a sign-in sheet by the door -- can start straight
+into that app, with no sign-in screen and no desktop to wander off into. This
+is what Windows calls automatic sign-in and assigned access.
+
+**Set it up** (as an administrator):
+
+1. Make an account for the job: **Settings > Accounts > Other users > Add
+   someone else to this PC**. A *standard* account: anyone who can turn the
+   tablet on can use it without its password.
+2. Sign in as that account once and install the app it will run -- from the
+   SG Store (Sonos, for example), or any other way. Make sure the app is in
+   Start, for everyone or for you as the administrator (installers that ask
+   usually mean "everyone"). Set the app up the way it should stay (for
+   Sonos: find your system, pick the room). Sign out.
+3. Sign in as an administrator and open **Settings > Accounts > Kiosk**.
+   Under **When this PC starts, sign in automatically as**, choose the
+   account. You are asked for an administrator's permission.
+4. Under **Kiosk app**, press **Choose an app** and pick the app from the
+   list of Start's apps.
+5. Restart the tablet. It signs that account in by itself and opens the app
+   full screen; the taskbar hides at the bottom edge of the screen. If the
+   app is closed -- or crashes -- it opens again after a few seconds.
+
+Without step 4 the account simply signs in by itself and gets the ordinary
+desktop. To start an app at sign-in without the kiosk, see
+[Starting programs at sign-in](03-programs.md#starting-programs-at-sign-in).
+
+**Getting out of the kiosk.** Press **Ctrl+Alt+Del** and choose **Sign out**.
+The ordinary sign-in screen appears -- the automatic sign-in happens only
+once per start of the PC -- and an administrator can sign in. In the kiosk
+account itself, pointing at or touching the bottom edge of the screen shows
+the taskbar, and the **Start** key opens Start. Over the network, an
+administrator can `ssh` in as always.
+
+**Turning it off.** In **Settings > Accounts > Kiosk**, choose **Don't use a
+kiosk app**, or set the automatic sign-in to **Nobody (show the sign-in
+screen)**. The account's own taskbar setting comes back at its next sign-in.
+
+**Worth knowing:**
+
+- No password is stored. The sign-in service starts the account's session
+  directly at boot (greetd's initial session); for an account that signs in
+  by itself, the screen does not lock when it turns off or the PC sleeps.
+- The account's saved passwords (its keyring) stay locked, since no password
+  was typed, and it is not asked to unlock them at every start. Windows
+  programs keep working; a Linux program that wants to save a password may
+  ask for one.
+- A program that starts a second program and exits (an updater-launcher) is
+  followed to the program it started. A program that keeps closing at once
+  is retried every minute after five quick tries, not in a tight loop.
+- The settings live in `/etc/stained-glass/autologon.conf` and greetd's
+  `/etc/greetd/config.toml` (a marked `[initial_session]` block); the session
+  log (`journalctl -t sg-session`) shows `sg-kiosk:` lines when the app starts
+  and closes.

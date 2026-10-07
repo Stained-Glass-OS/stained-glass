@@ -74,6 +74,14 @@ trust. SG Defender scans it in Downloads and again in Applications.
 
 ## Starting programs at sign-in
 
-**Task Manager > Startup** lists what starts when you sign in, and turns items
-on and off. Items installed for everyone need an administrator to change; you
-are asked. Right-click a program in Start for **Start at sign-in** to add one.
+**Settings > Apps > Startup** and **Task Manager > Startup** list what starts
+when you sign in, and turn items on and off. Items installed for everyone need
+an administrator to change; you are asked. To add a program -- any app in
+Start, Windows or Linux, including ones from the SG Store -- either
+right-click it in Start and choose **Start at sign-in**, or press **Add an
+app** on the Startup page and pick it. Both put its shortcut in your Startup
+folder (`shell:startup`), where you can also drop shortcuts yourself; the
+Startup page's **Remove** takes one away again.
+
+For a device that should run one app and nothing else, see
+[A kiosk: a tablet that runs one app](04-administration.md#a-kiosk-a-tablet-that-runs-one-app).
