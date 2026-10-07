@@ -189,7 +189,27 @@ tested against the wrong Wine (fixed, pending a green run).
   sg-image `make rdp-test`. **E1b done (2026-09-24):** a login for a user
   signed in at the console takes that session over, as on Windows. The console
   goes dark and deaf; Ctrl+Alt+Del there, or disconnecting, gives it back
-  locked. Open: a compressed codec, pattern A (console shadow).
+  locked. **Compressed codec done (2026-10-07):** frames go as RDP 6.0
+  bitmap compression ("planar", MS-RDPEGDI 2.2.2.5.1) from an encoder of our
+  own, lossless, to any client that advertises it (Windows' client and
+  FreeRDP do), uncompressed otherwise; a desktop of application windows costs
+  a tenth of its raw size, a scrolled page of text a seventh, the
+  photographic wallpaper about half (sg-session 0.1.0-162; `make
+  test-rdp-stream` checks it pixel for pixel through a real client, mutant
+  `SG_MUTANT_PLANAR_DELTA`). **Pattern A, console shadow, done
+  (2026-10-07):** a client whose alternate shell is `shadow [user]
+  [/control]` views -- or views and controls -- the session live at the
+  console while its user stays there, as Windows' shadow. Your own session
+  needs only your password; another user's needs an administrator and the
+  person at the console to say yes on the secure surface. The console shows
+  an amber frame while it is viewed; view only is enforced by the compositor;
+  disconnecting or Ctrl+Alt+Del at the console ends it and changes nothing
+  else (sg-session 0.1.0-164, sg-compositor 0.2.0+sg48; gate `make
+  test-rdp-shadow`, mutants `SG_MUTANT_SHADOW_NO_CONSENT`,
+  `SG_MUTANT_SHADOW_VIEW_INPUT`). See ADR 0010. Open: shadowing more than
+  the newest of several console monitors; a way for the console user to
+  end it other than Ctrl+Alt+Del (a button on the frame); RemoteFX/GFX
+  codecs, if planar proves too heavy on slow links.
 - **E2. RDP out (client).** An `mstsc`-like client. Cheapest path: ship an RDP
   client (FreeRDP, or Windows `mstsc` under Wine) and a launcher. *Depends on:*
   nothing hard.

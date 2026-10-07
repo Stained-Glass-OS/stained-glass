@@ -151,6 +151,57 @@ Pattern B now ends in a desktop. What building it settled:
   rather than having the session moved (Windows' behaviour), which needs the
   compositor to move a session between outputs; and pattern A.
 
+## Update: a codec of our own, and the console shadow (E1, 2026-10-07)
+
+**Planar, written here.** The uncompressed bitmap updates above are gone:
+`rdp/sg-planar.c` in sg-session is an encoder for RDP 6.0 bitmap compression
+written from the published spec (MS-RDPEGDI 2.2.2.5.1 and 3.1.9), lossless --
+red, green and blue planes, no alpha plane (the NA bit), every scanline after
+the first a vertical delta, run-length coded. FreeRDP's own encoder stores
+the delta without its sign (`s2c >= 0` on an unsigned byte), which is the
+streaking the gate caught; a mutant that repeats that mistake fails both the
+encoder's own test (our encoder through FreeRDP's decoder) and the gate's
+pixel-exact comparison through `xfreerdp3`. It is sent only to a client that
+advertised `DRAW_ALLOW_SKIP_ALPHA` at 32 bpp, which Windows' client and
+FreeRDP do; anything else gets uncompressed tiles. Measured on 64x64 tiles:
+Settings windows 3.73 MB -> 0.34 MB, the photographic default wallpaper with
+icons and taskbar 4.10 MB -> 1.93 MB, a scrolled page of text 1.05 MB ->
+0.14 MB (what changed tiles cost; the transport's bulk compression applies on
+top).
+
+**Pattern A, as RDP's shadow.** The pattern-A agent turned out to be the RDP
+server itself, which already is a session-0 service holding exactly one
+session's capture and injection after PAM. A client asks for
+`shadow [user] [/control]` as its alternate shell; the root monitor, after
+PAM, connects it to the console compositor with a new control command,
+`SHADOW view|control`, instead of starting a session or taking one over:
+
+- **Nothing moves.** The viewer captures the console's own output; the
+  console keeps its input and its lock state, and the session is never
+  unlocked on the viewer's behalf.
+- **Consent where Windows asks for it.** Your own session needs only your
+  password. Another user's needs an administrator's (`sg-admins`) *and* the
+  person at the console to answer a prompt on the secure surface -- the
+  broker's SECURE mode, the same isolation as the elevation prompt, so no
+  program in that session can click "Yes" for them. No answer in 30 s is
+  no; a locked console cannot be asked, so the request is refused.
+- **View only is the compositor's to enforce.** A view connection is never
+  offered the virtual keyboard or pointer globals. The RDP worker is the
+  exposed, unprivileged side, so it is not trusted to drop input itself.
+- **The console always knows.** An amber frame round the screen, over
+  everything including the lock screen, for as long as the connection
+  lasts; Ctrl+Alt+Del at the console ends it, and disconnecting ends it with
+  nothing else changed.
+
+Evidence: sg-session `make test-rdp-shadow` (a real FreeRDP client, a
+headless console session, the broker with a prompt stand-in that records
+whether the console was SECURE; with a Wine prefix it drives the real
+prompt): 22 checks pass; with `SG_MUTANT_SHADOW_VIEW_INPUT` (the view
+connection offered input) "a view-only client's input arrived: chars 'apeek'";
+with `SG_MUTANT_SHADOW_NO_CONSENT` (the console's answer ignored) the "no"
+case connects. Third-party pattern-A agents (ScreenConnect and the like as
+session-0 Windows programs) are still the design above, unbuilt.
+
 ## Consequences
 
 **The security-critical invariant is one sentence:** screen capture and input
