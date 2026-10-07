@@ -12,6 +12,13 @@ Windows side, and a shell, Control Panel and apps written from scratch to behave
 <a class="btn secondary" href="https://github.com/Stained-Glass-OS">Source on GitHub</a>
 </div>
 
+<div class="notice" markdown="1">
+
+**Early development.** Stained Glass OS is not yet ready for everyday use. Try it in a virtual
+machine or the live session first. Nothing on your computer changes until you run Setup's install.
+
+</div>
+
 </div>
 
 ![The Stained Glass OS desktop with the Start menu open](img/desktop.png){: .shot}
@@ -84,7 +91,7 @@ compatibility comes from re-implementing the documented Windows APIs ourselves.
 </div>
 
 <div class="grid" markdown="1">
-![Firefox, installed by first-run setup, showing this website](img/firefox.png){: .shot}
+![Firefox, installed with the system, showing this website](img/firefox.png){: .shot}
 ![Steam, installed with its own installer, signing in](img/steam.png){: .shot}
 </div>
 
@@ -99,7 +106,14 @@ Microsoft Corporation in any way. Windows is a trademark of Microsoft Corporatio
 
 </div>
 
-**[sg-live-latest.iso](iso/sg-live-latest.iso)** &mdash; about 2 GB, for 64-bit PCs with UEFI
+<div class="notice" markdown="1">
+
+**Early development.** Stained Glass OS is not yet ready for everyday use. Try it in a virtual
+machine or the live session first. Nothing on your computer changes until you run Setup's install.
+
+</div>
+
+**[sg-live-latest.iso](iso/sg-live-latest.iso)** &mdash; about 3 GB, for 64-bit PCs with UEFI
 firmware. Older builds and SHA-256 checksums are in [/iso/](iso/).
 
 1. Write it to a USB stick (any image writer, or `dd`), or attach it to a virtual machine's CD
@@ -114,8 +128,8 @@ Nothing on the computer changes until you run Setup's install.
 
 ![Setup: choosing where to install](img/setup-disk.png){: .shot}
 
-After the restart, first-run setup asks for your region, keyboard, network and privacy choices,
-and offers a web browser to install; then you sign in.
+After the restart, first-run setup asks for your region, keyboard, network and privacy choices;
+then you sign in. Firefox is already installed.
 
 <div class="grid" markdown="1">
 ![First-run setup: privacy choices](img/oobe-privacy.png){: .shot}

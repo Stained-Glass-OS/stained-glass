@@ -9,10 +9,12 @@ touch -- site/publish.sh rsyncs everything else.
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 """
+import datetime
 import html
 import os
 import re
 import shutil
+import subprocess
 import sys
 
 import markdown
@@ -21,6 +23,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(REPO, "build", "site")
 GITHUB = "https://github.com/Stained-Glass-OS"
+SITE = "https://freesoft.page/"
+# /.well-known/security.txt (RFC 9116) needs a real contact -- the owner's
+# choice, never guessed (site review 2026-10-07). Unset: no security.txt.
+SECURITY_CONTACT = os.environ.get("SG_SITE_SECURITY_CONTACT", "")
+NOW = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
+
+
+def lastmod(*paths):
+    """The newest commit date of the sources, for the sitemap (the build's
+    date when git has none)."""
+    try:
+        out = subprocess.run(["git", "-C", REPO, "log", "-1", "--format=%cI", "--", *paths],
+                             capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        out = ""
+    return out or NOW.isoformat()
 
 CSS = """
 :root {
@@ -146,6 +164,8 @@ def main():
         front = f.read()
     with open(os.path.join(OUT, "index.html"), "w") as f:
         f.write(page("Stained Glass OS", fix_links(md(front))))
+    # the sitemap: every page rendered here (not /apt/, /iso/ or /reports/)
+    pages = [("", lastmod(os.path.join(HERE, "index.md")))]
 
     entries = {"docs": [], "decisions": [], "guide": []}
     # the guide (guide/*.md): written for people using and running the
@@ -164,6 +184,8 @@ def main():
             with open(os.path.join(outdir, outname), "w") as f:
                 f.write(page(title + " -- Stained Glass OS", fix_links(md(text)), depth))
             entries[key].append((outname, title))
+            rel = ("docs/guide/" if key == "guide" else sub + "/") + outname
+            pages.append((rel, lastmod(os.path.join(src, name))))
 
     guide = "\n".join(f'<li><a href="guide/{n}">{html.escape(t)}</a></li>' for n, t in entries["guide"])
     items = "\n".join(f'<li><a href="{n}">{html.escape(t)}</a></li>' for n, t in entries["docs"])
@@ -190,7 +212,33 @@ def main():
              f'<h2>Architecture decisions</h2><ul class="doclist">{decs}</ul>')
     with open(os.path.join(OUT, "docs", "ai-notes.html"), "w") as f:
         f.write(page("AI architectural notes -- Stained Glass OS", notes, 1))
+    every = lastmod(os.path.join(REPO, "guide"), os.path.join(REPO, "docs"))
+    pages += [("docs/index.html", every), ("docs/ai-notes.html", every)]
+    write_crawl_files(pages)
     print("site built in", OUT)
+
+
+def write_crawl_files(pages):
+    """robots.txt (every crawler welcome: owner, 2026-10-07), sitemap.xml and
+    /.well-known/security.txt -- built here, as site/publish.sh's rsync
+    --delete removes anything put on the server by hand."""
+    with open(os.path.join(OUT, "robots.txt"), "w") as f:
+        f.write(f"User-agent: *\nAllow: /\nSitemap: {SITE}sitemap.xml\n")
+    urls = "".join(f"<url><loc>{html.escape(SITE + rel)}</loc><lastmod>{mod}</lastmod></url>\n"
+                   for rel, mod in sorted(pages))
+    with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
+        f.write('<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                f"{urls}</urlset>\n")
+    if not SECURITY_CONTACT:
+        print("note: no SG_SITE_SECURITY_CONTACT, so no security.txt", file=sys.stderr)
+        return
+    # Expires at most a year out (RFC 9116); 180 days, renewed by every publish
+    expires = (NOW + datetime.timedelta(days=180)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    os.makedirs(os.path.join(OUT, ".well-known"), exist_ok=True)
+    with open(os.path.join(OUT, ".well-known", "security.txt"), "w") as f:
+        f.write(f"Contact: {SECURITY_CONTACT}\nExpires: {expires}\nPreferred-Languages: en\n"
+                f"Canonical: {SITE}.well-known/security.txt\n")
 
 
 if __name__ == "__main__":
