@@ -63,6 +63,17 @@ down. The power button and the lid are the same for everyone on the PC, so
 changing them needs an administrator. **Control Panel > Hardware and Sound >
 Power Options** leads there too.
 
+## Screen and sound
+
+**Settings > System > Display** sets the resolution, the scale, Night light
+and the **Display orientation** (Landscape, Portrait, and both flipped). On a
+tablet or a convertible with an accelerometer the screen turns as you turn
+the PC; **Rotation lock** keeps it as it is, and the orientation list can
+then be set by hand. The touch screen and the pen turn with it.
+
+A USB device plugged in or taken out plays a short sound, as on Windows.
+**Settings > System > Sound > Device sounds** turns it off.
+
 ## Keyboard shortcuts
 
 | Keys | What they do |
