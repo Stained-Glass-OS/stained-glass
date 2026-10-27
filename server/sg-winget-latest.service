@@ -1,0 +1,17 @@
+[Unit]
+Description=SG Store: winget's newest versions (/winget/latest.tsv)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=sg-winget
+ExecStart=/usr/local/bin/sg-winget-latest
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/srv/www/winget
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+MemoryMax=300M
+TimeoutStartSec=10min

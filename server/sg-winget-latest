@@ -1,0 +1,35 @@
+#!/usr/bin/python3 -I
+# sg-winget-latest: every winget package's newest version, for the SG Store, from winget's own
+# index (its CDN's source2.msix, Public/index.db, table packages). Writes
+# /srv/www/winget/latest.tsv ("id<TAB>version" lines) whole, or leaves the old one.
+# GitHub's API, which the Store asked before, answers 60 requests an hour to an address.
+import io, os, sqlite3, sys, tempfile, urllib.request, zipfile
+
+SRC = 'https://cdn.winget.microsoft.com/cache/source2.msix'
+OUT = '/srv/www/winget/latest.tsv'
+
+def main():
+    req = urllib.request.Request(SRC, headers={'User-Agent': 'sg-winget-latest'})
+    data = urllib.request.urlopen(req, timeout=120).read()
+    if len(data) > 64 << 20:
+        sys.exit('source2.msix is too large')
+    with tempfile.TemporaryDirectory() as tmp:
+        db = os.path.join(tmp, 'index.db')
+        with zipfile.ZipFile(io.BytesIO(data)) as z, open(db, 'wb') as f:
+            f.write(z.read('Public/index.db'))
+        con = sqlite3.connect('file:' + db + '?mode=ro', uri=True)
+        rows = con.execute('select id, latest_version from packages order by id').fetchall()
+        con.close()
+    lines = [f'{i}\t{v}\n' for i, v in rows
+             if i and v and not any(c in i + v for c in '\t\r\n')]
+    if len(lines) < 1000:
+        sys.exit(f'only {len(lines)} packages: kept the old list')
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    fd, tmpname = tempfile.mkstemp(dir=os.path.dirname(OUT), prefix='.latest-')
+    with os.fdopen(fd, 'w', encoding='utf-8') as f:
+        f.writelines(lines)
+    os.chmod(tmpname, 0o644)
+    os.replace(tmpname, OUT)
+    print(f'{len(lines)} packages')
+
+main()
