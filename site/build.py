@@ -72,6 +72,8 @@ main { padding: 28px 0 60px; }
   background: var(--accent); color: #fff; font-weight: 600; }
 .btn.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
 img.shot { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); }
+.video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 8px 0 28px; }
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 8px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
 .card h3 { margin-top: 0; }

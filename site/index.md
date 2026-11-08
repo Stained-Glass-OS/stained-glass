@@ -21,6 +21,15 @@ machine or the live session first. Nothing on your computer changes until you ru
 
 </div>
 
+## See it in action
+
+A tour of Stained Glass OS: installing it, the desktop, the app store, Windows and Linux apps side by
+side, Microsoft Word and OneDrive, and what makes it different.
+
+<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/WEEd3b-GIPE" title="Stained Glass OS: a tour" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+
+<p><a href="https://youtu.be/WEEd3b-GIPE">Watch on YouTube</a></p>
+
 ![The Stained Glass OS desktop with the Start menu open](img/desktop.png){: .shot}
 
 ## What it is
