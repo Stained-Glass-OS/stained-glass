@@ -202,6 +202,51 @@ with `SG_MUTANT_SHADOW_NO_CONSENT` (the console's answer ignored) the "no"
 case connects. Third-party pattern-A agents (ScreenConnect and the like as
 session-0 Windows programs) are still the design above, unbuilt.
 
+## Update: pattern A for Windows remote-support services (2026-11-25)
+
+Pattern A now works for remote-support tools installed as Windows services,
+the way they work on Windows. A VNC server's service (TightVNC 2.8 GPL in the
+gate) starts its desktop helper with `DuplicateTokenEx` of its own token,
+`SetTokenInformation(TokenSessionId, WTSGetActiveConsoleSessionId())` and
+`CreateProcessAsUser`; the helper captures the screen and calls `SendInput`.
+A technician connected to it sees the lock screen and unlocks the machine by
+typing the password into it; the password goes to PAM through sg-lockd as at
+the console. What it took, and what it decided:
+
+- **TokenSessionId is real, for SeTcbPrivilege only** (wine-sg 9624): SYSTEM
+  may give a token another session; anyone else gets
+  `ERROR_PRIVILEGE_NOT_HELD`. The stub before said yes to everyone.
+- **The helper gets a display of its own, never the person's** (9625,
+  sg-session `sg-elevated-run --system`): a process started with a token of
+  another session than its starter's is exec'd through sg-elevated-run, as an
+  elevated program is (B56): its own Xwayland, managed by the person's
+  compositor, SYSTEM's identity, and the compositor's privileged socket for
+  capture and input (9626). Its desktop is that display's, and so is its
+  input desktop.
+- **The compositor grants capture and input by control group, not by
+  account** (sg-compositor `-R`). The machine account (sgsystem) is the lock
+  screen, the consent prompt, the Windows services -- and every elevated
+  program. On the privileged socket, capture and injection now go to root and
+  to sgsystem processes in `/system.slice/sg-wineserver.service` only (the
+  services and what they start), decided from the connecting process's
+  control group, which only root can change. The rest stay privileged for
+  display but get the public capture and no injection. Before this an
+  elevated program could photograph the lock screen and type into it; the
+  gate's mutant proves it.
+- **The sign-in screen is reachable** too: its compositor has a privileged
+  socket of its own (`/run/stained-glass-seat/greeter/<uid>`).
+- **A frame says so**: while remote support captures, the console shadow's
+  amber frame shows round the screen (until 3 s after the last capture). No
+  consent prompt: Windows has none for a service an administrator installed.
+
+The boundary is the one Windows draws: SYSTEM sees and drives the console;
+an administrator's elevated program does not, directly -- but an
+administrator can install a service, and a SYSTEM program can tamper with
+another SYSTEM process, as on Windows, where administrator-to-SYSTEM is not a
+security boundary either. Ordinary users gain nothing: another account cannot
+reach a session's privileged socket, cannot set TokenSessionId, and a user's
+own programs capture the lock screen black and type into nothing.
+
 ## Consequences
 
 **The security-critical invariant is one sentence:** screen capture and input
