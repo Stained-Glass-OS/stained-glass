@@ -226,18 +226,21 @@ last update" instead, and the Control Panel's Recovery page can convert them.
 ### Why does SG Defender exist? {#defender}
 
 Because Stained Glass OS runs Windows programs, and that includes Windows malware. The usual Linux
-answer, "Windows viruses can't run here", stops being true once Windows software runs well. SG
-Defender (the ClamAV engine) is a first step at covering the moment that matters most for most
-people: downloading an installer and running it. It scans programs, installers, scripts, archives
-and macro documents as they land in Downloads, Desktop and Applications.
+answer, "Windows viruses can't run here", stops being true once Windows software runs well. So SG
+Defender (built on the ClamAV engine) works the way Windows' own antivirus does:
 
-ClamAV should not be the only line of defence, and scanning only those folders is narrow. The aim is
-what Windows Defender does: scanning a program when it starts, scheduled quick scans of the places
-malware hides, and a smaller memory footprint. Beside that, the permission model limits what a
-malicious program can do: standard users cannot write the machine's registry or system folders, and
-changes that need an administrator ask first. An administrator can turn SG Defender off in
-**Settings > Update & Security > Virus & threat protection** (it gives back about 1 GB of memory).
-More in [How viruses are handled](docs/guide/06-viruses.html).
+- **Real-time protection:** Windows programs, DLLs, installers and scripts are scanned before they
+  start, and a program that holds malware is not started.
+- **Downloads:** what lands in Downloads, Desktop and Applications is scanned when it arrives.
+- **Scans:** a quick scan of the places malware hides runs every day, and you can start a quick,
+  full or custom scan in Settings.
+
+ClamAV is not meant to be the only line of defence, and it is not. Store apps are checked against
+a known fingerprint before they run, packages are signed, and the permission model limits what a
+malicious program can do: standard users cannot write the machine's registry or system folders,
+and changes that need an administrator ask first. An administrator can turn SG Defender off in
+**Settings > Update & Security > Virus & threat protection**, which gives back about 1 GB of
+memory. More in [How viruses are handled](docs/guide/06-viruses.html).
 
 ## Help {#getting-help}
 
