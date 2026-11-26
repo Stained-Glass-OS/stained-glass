@@ -8,6 +8,7 @@ Windows side, and a shell, Control Panel and apps written from scratch to behave
 
 <div class="buttons">
 <a class="btn" href="iso/sg-live-latest.iso">Download the ISO</a>
+<a class="btn secondary" href="faq.html">FAQ</a>
 <a class="btn secondary" href="docs/index.html">Read the docs</a>
 <a class="btn secondary" href="https://github.com/Stained-Glass-OS">Source on GitHub</a>
 </div>
@@ -23,12 +24,30 @@ machine or the live session first. Nothing on your computer changes until you ru
 
 ## See it in action
 
-A tour of Stained Glass OS: installing it, the desktop, the app store, Windows and Linux apps side by
-side, Microsoft Word and OneDrive, and what makes it different.
+<div class="videos" markdown="1">
+<div markdown="1">
 
-<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/WEEd3b-GIPE" title="Stained Glass OS: a tour" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+**Newest: Is Stained Glass OS just reskinned Linux?** Multi-monitor, accent colours, scaling, how
+each kind of Windows app runs, gaming and anti-cheat.
 
-<p><a href="https://youtu.be/WEEd3b-GIPE">Watch on YouTube</a></p>
+<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/2nwHxD833-8" title="Is Stained Glass OS Just Reskinned Linux?" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+
+<p><a href="https://youtu.be/2nwHxD833-8">Watch on YouTube</a> &middot; <a href="videos.html#update-1">Transcript</a></p>
+
+</div>
+<div markdown="1">
+
+**The tour: Reverse-Engineered Windows.** Installing it, the desktop, the app store, Windows and
+Linux apps side by side, Microsoft Word and OneDrive.
+
+<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/WEEd3b-GIPE" title="Reverse-Engineered Windows" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+
+<p><a href="https://youtu.be/WEEd3b-GIPE">Watch on YouTube</a> &middot; <a href="videos.html#tour">Transcript</a></p>
+
+</div>
+</div>
+
+All the videos, with transcripts: [Videos](videos.html).
 
 ![The Stained Glass OS desktop with the Start menu open](img/desktop.png){: .shot}
 
@@ -53,8 +72,8 @@ with search and progress dialogs, Settings (Win+I) and a full Control Panel.
 ### Runs Windows programs
 
 Our Wine build runs 32- and 64-bit programs from one install: Git for Windows, PowerShell 7,
-Python, .NET Framework apps, installers (MSI, NSIS), winget, and Microsoft Edge when you
-install it yourself.
+Python, .NET Framework apps, installers (MSI, NSIS), winget, Microsoft Office when you
+install it yourself, and DirectX games through DXVK and VKD3D-Proton.
 
 </div>
 <div class="card" markdown="1">
@@ -122,13 +141,16 @@ machine or the live session first. Nothing on your computer changes until you ru
 
 </div>
 
-**[sg-live-latest.iso](iso/sg-live-latest.iso)** &mdash; about 3 GB, for 64-bit PCs with UEFI
-firmware. Older builds and SHA-256 checksums are in [/iso/](iso/).
+**[sg-live-latest.iso](iso/sg-live-latest.iso)** &mdash; about 3.3 GB, for 64-bit PCs with UEFI
+or legacy BIOS firmware. Secure Boot must be turned off. The SHA-256 checksum is in
+[/iso/](iso/).
 
-1. Write it to a USB stick (any image writer, or `dd`), or attach it to a virtual machine's CD
-   drive. In a VM, turn on **UEFI** firmware (VirtualBox: *Enable EFI*; virt-manager/QEMU: OVMF)
-   and give it at least 4 GB of memory and a 24 GB disk.
-2. Boot it and choose **Stained Glass OS (live: try or install)**.
+1. Write it to a USB stick (any image writer, Rufus in "DD image" mode, `dd`, or copy it onto a
+   Ventoy stick), or attach it to a virtual machine's CD drive. In a VM, give it at least 4 GB of
+   memory and a 24 GB disk; UEFI (VirtualBox: *Enable EFI*; virt-manager/QEMU: OVMF) and BIOS
+   firmware both work.
+2. Boot it and choose **Stained Glass OS (live: try or install)**. The live session needs no
+   password; if one is asked for, the account is `live` with an empty password.
 3. Setup appears. Choose **Try Stained Glass OS** to use it without changing the computer, or
    **Install now** to install it: pick or create a partition (it can go beside Windows), then
    name the computer and create your account.
@@ -143,6 +165,42 @@ then you sign in. Firefox is already installed.
 <div class="grid" markdown="1">
 ![First-run setup: privacy choices](img/oobe-privacy.png){: .shot}
 ![The lock screen](img/lock.png){: .shot}
+</div>
+
+Black screen, NVIDIA, dual boot, Secure Boot? See the [FAQ](faq.html).
+
+## Community {#community}
+
+Where to ask, where to report, and where to follow along:
+
+<div class="grid" markdown="1">
+<div class="card" markdown="1">
+
+### Questions and ideas
+
+[GitHub Discussions](https://github.com/Stained-Glass-OS/stained-glass/discussions): ask a
+question, suggest an idea, vote in polls, or show what you got running. A free GitHub account is
+all you need.
+
+</div>
+<div class="card" markdown="1">
+
+### Bugs
+
+[GitHub Issues](https://github.com/Stained-Glass-OS/stained-glass/issues) for anything that does not
+work. **Report a problem** (in Start, or right-click a program's taskbar button) gathers the
+details and logs for you. [How to report well](faq.html#help).
+
+</div>
+<div class="card" markdown="1">
+
+### Videos
+
+Updates and walkthroughs on the [YouTube channel](https://www.youtube.com/channel/UCIVaIdjtr6aNPdTm-JNbFAg).
+Tell us in the comments what to test next. All of them, with transcripts:
+[Videos](videos.html).
+
+</div>
 </div>
 
 ## Package repository
@@ -166,7 +224,7 @@ sudo apt update
 ## Status
 
 Stained Glass OS is in active development and **not yet ready for everyday use**. The
-[guide](docs/index.html) covers getting started, everyday use, programs, administration and
+[FAQ](faq.html) answers the common questions; the [guide](docs/index.html) covers getting started, everyday use, programs, administration and
 [how it all fits together](docs/guide/05-how-it-works.html).
 
 ## Source

@@ -3,7 +3,8 @@
 
     site/build.py OUT_DIR
 
-The front page is site/index.md; every docs/*.md and docs/decisions/*.md is
+The front page is site/index.md, and every other site/*.md (the FAQ, the videos)
+a page beside it; every docs/*.md and docs/decisions/*.md is
 rendered to OUT_DIR/docs/. /apt/ and /iso/ on the server are not ours to
 touch -- site/publish.sh rsyncs everything else.
 
@@ -74,6 +75,13 @@ main { padding: 28px 0 60px; }
 img.shot { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); }
 .video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 8px 0 28px; }
 .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 8px; }
+.videos { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 20px; }
+.videos .video { margin-bottom: 6px; }
+.videos p { margin-top: 0; }
+details { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 16px; margin: 0 0 28px; }
+summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+details[open] summary { margin-bottom: 8px; }
+h3[id] { scroll-margin-top: 12px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
 .card h3 { margin-top: 0; }
@@ -93,7 +101,7 @@ pre { max-width: 100%; }
   header.top .wrap { flex-direction: column; align-items: flex-start; gap: 6px; }
   header.top nav { gap: 12px; }
   .hero h1 { font-size: 1.9rem; }
-  .grid { grid-template-columns: 1fr; }
+  .grid, .videos { grid-template-columns: 1fr; }
 }
 """
 
@@ -123,7 +131,8 @@ def page(title, body, depth=0):
 </head><body>
 <header class="top"><div class="wrap">
 <a class="brand" href="{up}index.html">{LOGO}Stained Glass OS</a>
-<nav><a href="{up}index.html#download">Download</a><a href="{up}docs/index.html">Docs</a>
+<nav><a href="{up}index.html#download">Download</a><a href="{up}faq.html">FAQ</a><a href="{up}videos.html">Videos</a>
+<a href="{up}docs/index.html">Docs</a><a href="{up}index.html#community">Community</a>
 <a href="{up}apt/">Packages</a><a href="{up}iso/">ISOs</a><a href="{up}reports/">Debug Reports</a><a href="{GITHUB}">Source</a></nav>
 </div></header>
 <main><div class="wrap">
@@ -170,6 +179,17 @@ def main():
         f.write(page("Stained Glass OS", fix_links(md(front))))
     # the sitemap: every page rendered here (not /apt/, /iso/ or /reports/)
     pages = [("", lastmod(os.path.join(HERE, "index.md")))]
+    # the site's own pages beside the front page: site/NAME.md -> /NAME.html
+    # (faq.md, videos.md)
+    for name in sorted(os.listdir(HERE)):
+        if not name.endswith(".md") or name == "index.md":
+            continue
+        with open(os.path.join(HERE, name)) as f:
+            text = f.read()
+        outname = name[:-3] + ".html"
+        with open(os.path.join(OUT, outname), "w") as f:
+            f.write(page(title_of(text, name[:-3]) + " -- Stained Glass OS", fix_links(md(text))))
+        pages.append((outname, lastmod(os.path.join(HERE, name))))
 
     entries = {"docs": [], "decisions": [], "guide": []}
     # the guide (guide/*.md): written for people using and running the
