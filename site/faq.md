@@ -17,7 +17,7 @@ machine or the live session first.
 **What it is:** [Is it Windows?](#is-it-windows) &middot; [Microsoft code](#microsoft-code) &middot;
 [Free and open source](#license) &middot; [Is it vibe coded?](#vibe-coded) &middot; [Privacy](#privacy)<br>
 **Using it:** [Which programs run](#programs) &middot; [Games and anti-cheat](#games) &middot;
-[Updates](#updates) &middot; [SG Defender](#defender)<br>
+[Updates](#updates) &middot; [SG Defender](#defender) &middot; [Typing emoji](#emoji)<br>
 **Help:** [Report a bug or ask a question](#help)
 
 ## Trying it
@@ -241,6 +241,16 @@ malicious program can do: standard users cannot write the machine's registry or 
 and changes that need an administrator ask first. An administrator can turn SG Defender off in
 **Settings > Update & Security > Virus & threat protection**, which gives back about 1 GB of
 memory. More in [How viruses are handled](docs/guide/06-viruses.html).
+
+### How do I type emoji? {#emoji}
+
+Press **Win+.** (or **Win+;**), as on Windows. The emoji panel opens at your text cursor: type to
+search, or browse recently used emoji and the categories, then click one or press Enter to insert it.
+Emoji show in colour in Windows programs, browsers and Linux apps alike.
+
+Not there yet: a skin-tone picker, and typing in the panel's search box while a Linux program is in
+front (there you pick by clicking). Older installs get the panel with
+`sudo apt update && sudo apt full-upgrade` and a restart.
 
 ## Help {#getting-help}
 
