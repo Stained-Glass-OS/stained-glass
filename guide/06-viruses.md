@@ -17,34 +17,64 @@ and the scanner only has to look at what arrives from elsewhere.
 ## SG Defender
 
 SG Defender is the **ClamAV** open-source antivirus engine, built in and on
-by default.
+by default. Stained Glass runs Windows programs, so Windows malware can run
+here too; SG Defender works the way Windows' own antivirus does:
 
-- It watches every person's **Downloads**, **Desktop** and **Applications**
-  (where AppImages are installed) folders. When a
-  program, installer, script, archive or macro-capable document finishes
-  arriving there, it is scanned. A browser's half-finished download is
-  scanned once it is complete.
+- **Real-time protection.** Every Windows program, DLL and installer package
+  is scanned before it starts, and so are batch files and scripts (cmd,
+  wscript, cscript) before they run. PowerShell and other programs that use
+  the antimalware scan interface (AMSI) have their script text scanned too.
+  A program that holds malware is not started: the program that tried gets
+  the error "Operation did not complete successfully because the file
+  contains a virus or potentially unwanted software", the file goes to
+  quarantine, and you are told. A program that was already checked and has
+  not changed starts at once; new definitions check it again.
+- **Downloads.** Every person's **Downloads**, **Desktop** and
+  **Applications** (where AppImages are installed) folders are watched. A
+  program, installer, script, archive or macro-capable document is scanned
+  when it finishes arriving there.
+- **Scans.** A quick scan runs every day: the programs set to start
+  automatically (Run and RunOnce keys, Startup folders, scheduled tasks, services),
+  the system folders, Program Files, Downloads, the Desktop and temporary
+  files. You can start a **Quick scan**, a **Full scan** (all your files and
+  drive C:) or a **Custom scan** (one folder) in Settings, or from a terminal
+  with `sg-defender-scan quick|full|custom FOLDER`. Scans run in the
+  background, at low priority.
 - If something is found, the file is moved to a **quarantine** that only an
   administrator can reach, so it cannot be run by accident, and you are told
   what was found and where.
 - Virus definitions update on their own, several times a day.
-- Ordinary files (photos, music, text) and the programs you run every day
-  are not scanned again, so it does not slow the machine down. ClamAV keeps
-  its definitions in memory, which costs about a gigabyte of RAM.
 
 **Settings > Update & Security > Virus & threat protection** shows whether it
-is on, how many files it has checked, the definitions in use, and what it
-has quarantined from your files.
+is on, the scans and their results, **Protection history** (what was found in
+your files), the definitions in use, and the settings below.
+
+### Your files stay yours
+
+SG Defender runs as the system, but it reads for you only what you could
+read yourself: a program asks about a file by handing over the file it has
+open, never by naming a path for the system to open. Your scans run with
+your own rights, and what they find is shown to you alone. The system's own
+folders are scanned with the system account's rights.
 
 ## Turning it off
 
-An administrator can turn SG Defender off on that page, for example on a
-machine with little memory. That stops ClamAV and gives its memory back.
-Store apps and packages are still checked as above; only downloads go
-unscanned. Turn it back on the same way.
+**Real-time protection** can be turned off by an administrator for a while,
+for example to install something SG Defender wrongly stops. It comes back on
+by itself within four hours, or at the next restart. Scheduled scans still
+run.
+
+**SG Defender** itself can be turned off by an administrator, for example on a
+machine with little memory. That stops ClamAV and gives its memory back
+(about a gigabyte). Store apps and packages are still checked as above.
+
+**Exclusions** (an administrator's): folders and files SG Defender does not
+scan, at start or in a scan. Only administrators can see them. Add only what
+you trust.
 
 From a terminal: `/etc/stained-glass/defender.conf` holds `enabled=1` or
-`enabled=0`, and `journalctl -u sg-defender` shows what it scanned and found.
+`enabled=0`, `/etc/stained-glass/defender-exclusions` the exclusions, and
+`journalctl -u sg-defender` shows what it scanned and found.
 
 ## If something was quarantined
 
