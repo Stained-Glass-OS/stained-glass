@@ -12,6 +12,12 @@ for its settings, or open **Settings > Personalization > Taskbar**.
 - Right-click a button for its menu: pin or unpin it, **Report a problem**,
   close its windows.
 
+A program that opens a window while you are typing somewhere else does not
+take the keyboard from you, as on Windows: its window opens behind the one you
+are working in and its taskbar button blinks orange, then stays orange until
+you click it (or its window). Programs you start yourself -- from Start, the
+desktop, File Explorer, a terminal, Run -- come to the front as usual.
+
 **Start** lists every program, Windows or Linux. Type to search programs and
 settings. Right-click a program to pin it to Start or the taskbar, run it as
 an administrator, open its file location, or set it to **start at sign-in**.
@@ -84,7 +90,7 @@ A USB device plugged in or taken out plays a short sound, as on Windows.
 | Win+I | Settings |
 | Win+X | The quick menu (Terminal, Device Manager, ...) |
 | Win+L | Lock |
-| Win+D | Show the desktop (again: the windows back) |
+| Win+D | Show the desktop (again: the windows back); type an icon's first letters, Enter opens it |
 | Win+M / Win+Shift+M | Minimize all / bring them back |
 | Win+Left / Right / Up / Down | Snap a window to a side, maximize, restore |
 | Win+Tab | Task View |

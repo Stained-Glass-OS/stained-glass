@@ -78,6 +78,36 @@ gives it a button, and wraps it in the same frame as a Windows window, so it
 moves, snaps, minimizes and switches like one. Task Manager lists it and can
 end it.
 
+## Which window gets the keyboard
+
+Stained Glass follows Windows' foreground rules. A program may bring its window
+to the front -- and take the keyboard -- only when you are working with it or
+with the program that started it: it is the program in front, it (or the
+program that started it, or that one's starter) got your last key press or
+click, the program in front let it (AllowSetForegroundWindow), nothing is in
+front at all, or you have not touched the keyboard or mouse for 200 seconds
+(ForegroundLockTimeout in HKCU\Control Panel\Desktop; 0 turns the rule off).
+Never while another program's menu is open. Otherwise its window opens behind
+yours and its taskbar button flashes orange.
+
+The shell's own pieces act on your keys and clicks and keep working: the
+Windows key and the Start button open Start in front, Alt+Tab, Win+D and the
+other Win shortcuts, the taskbar buttons, the clock's calendar, the
+notification centre. The administrator prompt appears on its own secure screen
+and is not affected.
+
+Programs started from outside the Windows side -- over ssh, by a service or a
+timer, or by a Linux program's launcher -- count as a program you are not
+working with, exactly as a program started by a scheduled task or a service
+does on Windows: no Windows program started them, and your click in a Linux
+window is not input the Windows side has seen. They come to the front only when
+nothing Windows-side is in front or you have been away for the 200 seconds;
+otherwise they wait behind, flashing on the taskbar, for your click. (A Linux
+window itself is placed by the compositor, not by these rules.) Scripts and
+tests that start a program and then type into it should click its window or
+taskbar button first, as a person would, or start it the way a person does
+(Start, Run, the desktop).
+
 ## Updates
 
 Every part -- Wine, the shell, the session, the compositor, the apps the
